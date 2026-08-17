@@ -12,6 +12,7 @@ Next.js 16, React 19, TypeScript, App Router, PostgreSQL, Prisma, Zod, SCSS, ESL
 * Prefer simple, explicit solutions over abstractions and design patterns.
 * Do not add dependencies without a clear reason.
 * Do not use `any`.
+* Do not use hacks to bypass type safety or runtime errors.
 * Keep changes focused and avoid unrelated modifications.
 
 ## Next.js
