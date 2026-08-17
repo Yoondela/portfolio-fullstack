@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Project {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  description  String
+  technologies String[]
+  websiteUrl   String?
+  githubUrl    String?
+  displayOrder Int
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  features Feature[]
+
+  @@index([published, displayOrder])
+}
+
+model Feature {
+  id           String   @id @default(uuid()) @db.Uuid
+  projectId    String   @db.Uuid
+  name         String
+  description  String
+  displayOrder Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  screenshots Screenshot[]
+
+  @@index([projectId, displayOrder])
+}
+
+model Screenshot {
+  id           String   @id @default(uuid()) @db.Uuid
+  featureId    String   @db.Uuid
+  url          String
+  altText      String
+  displayOrder Int
+  createdAt    DateTime @default(now())
+
+  feature Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@index([featureId, displayOrder])
+}
