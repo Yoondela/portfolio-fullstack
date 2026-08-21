@@ -1,5 +1,15 @@
 # Integration Tests
 
+## create-admin.ts
+
+Creates the initial administrator record for Credentials authentication. It will fail if the email already exists.
+
+```bash
+ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=your-password yarn tsx scripts/create-admin.ts
+```
+
+`DATABASE_URL` must be configured in `.env`.
+
 ## test-project-crud.ts
 
 Temporary integration test for the Project CRUD data-access layer.
