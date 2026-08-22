@@ -142,9 +142,7 @@ Server-rendered data should remain server-managed where practical.
 
 A separate Express API is not required.
 
-Server Actions and/or Next.js Route Handlers will be evaluated when implementing mutations.
-
-The choice should be based on the actual requirements and tradeoffs rather than predetermined preference.
+Project-management mutations use Server Actions because they serve administrative forms within this App Router application and have no external API consumers. Each action authorizes with `requireAdmin()`, validates FormData with Zod, performs the Prisma-backed mutation, and revalidates the affected views. Route Handlers remain appropriate if a future requirement needs a reusable HTTP API.
 
 ## 11. Image architecture
 

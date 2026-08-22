@@ -17,4 +17,4 @@ Enforce a server-side boundary: keep database access, authentication checks, aut
 Gains: stronger security, simpler reasoning about privileges, and no secrets in bundles. Costs: more server-side code and the need for explicit mutation endpoints or server action design decisions.
 
 ## Consequences
-All administrative operations must perform server-side authorization checks before mutations. Presentation components must not perform direct DB access. Decide per-endpoint whether to implement mutations as Server Actions or Route Handlers; document the chosen approach where mutations are implemented.
+All administrative operations must perform server-side authorization checks before mutations. Presentation components must not perform direct DB access. Project-management mutations use Server Actions: they are form-oriented, internal to this App Router application, and have no external API consumers. Route Handlers remain available if a future requirement needs a reusable HTTP API.
