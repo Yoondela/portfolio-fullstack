@@ -2,10 +2,8 @@
 
 import { useActionState, useState } from "react";
 import type { Project } from "@/generated/prisma/client";
-import {
-  initialProjectActionState,
-  updateProjectAction,
-} from "../actions";
+import { initialProjectActionState } from "../action-state";
+import { updateProjectAction } from "../actions";
 
 type EditableProject = Pick<
   Project,

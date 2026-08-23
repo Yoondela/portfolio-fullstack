@@ -13,15 +13,7 @@ import {
   createProjectInputSchema,
   updateProjectInputSchema,
 } from "@/lib/project-validation";
-
-export type ProjectActionResult =
-  | { success: true }
-  | { success: false; error: string };
-
-export const initialProjectActionState: ProjectActionResult = {
-  success: false,
-  error: "",
-};
+import type { ProjectActionResult } from "./action-state";
 
 const projectIdSchema = z.string().uuid();
 const publishedSchema = z.boolean();

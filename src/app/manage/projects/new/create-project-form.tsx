@@ -1,10 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  createProjectAction,
-  initialProjectActionState,
-} from "../actions";
+import { initialProjectActionState } from "../action-state";
+import { createProjectAction } from "../actions";
 
 /** Collects the initial project fields and displays server validation feedback. */
 export function CreateProjectForm() {
