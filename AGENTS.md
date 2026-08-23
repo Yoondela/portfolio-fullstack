@@ -55,3 +55,5 @@ End reviews with findings grouped as: **Blockers**, **Should fix**, and **Option
 - Avoid excessive gradients, neon grids, glowing effects, pixel fonts, futuristic HUD styling, or stereotypical “80s tech” visuals.
 - Functionality and readability come before decoration.
 - During application-layer work, keep styling basic enough that the later UI/Frontend milestone can refine it without major rewrites.
+
+Ideas in `docs/NEXT_VERSION_IDEAS.md` are future considerations, not current requirements. Do not implement them as part of current version.
