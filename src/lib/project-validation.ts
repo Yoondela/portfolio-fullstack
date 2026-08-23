@@ -1,11 +1,29 @@
 import { z } from "zod";
 
+// URLs are rendered as public links, so restrict them to navigable web protocols.
+const webUrlSchema = z
+  .string()
+  .url()
+  .refine(
+    (value) => {
+      try {
+        const protocol = new URL(value).protocol;
+        return protocol === "http:" || protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    "URL must use http or https"
+  )
+  .optional()
+  .or(z.literal(""));
+
 export const createProjectInputSchema = z.object({
   name: z.string().min(1, "Project name is required").max(255),
   description: z.string().min(1, "Description is required"),
   technologies: z.array(z.string()).default([]),
-  websiteUrl: z.string().url().optional().or(z.literal("")),
-  githubUrl: z.string().url().optional().or(z.literal("")),
+  websiteUrl: webUrlSchema,
+  githubUrl: webUrlSchema,
   displayOrder: z.number().int().nonnegative(),
   published: z.boolean().default(false),
 });
@@ -19,8 +37,8 @@ export const updateProjectInputSchema = z
     name: z.string().min(1, "Project name is required").max(255),
     description: z.string().min(1, "Description is required"),
     technologies: z.array(z.string()),
-    websiteUrl: z.string().url().optional().or(z.literal("")),
-    githubUrl: z.string().url().optional().or(z.literal("")),
+    websiteUrl: webUrlSchema,
+    githubUrl: webUrlSchema,
     displayOrder: z.number().int().nonnegative(),
     published: z.boolean(),
   })

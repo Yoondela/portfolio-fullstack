@@ -28,7 +28,8 @@
   - ✅ Delete projects.
   - ✅ Publish/unpublish projects.
 - 3.5 Public portfolio rendering — **curent**
-  - Projects, features, screenshots
+  - ✅ Render published projects.
+  - Features, screenshots
 
 ## 4. UI / Frontend
 
