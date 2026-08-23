@@ -12,7 +12,11 @@ import {
   updateProjectWithFeatures as updateProjectWithFeaturesRecord,
 } from "@/lib/projects";
 import { projectFeatureInputSchema } from "@/lib/feature-validation";
-import { createScreenshot as createScreenshotRecord } from "@/lib/screenshots";
+import { deleteFeature as deleteFeatureRecord } from "@/lib/features";
+import {
+  createScreenshot as createScreenshotRecord,
+  deleteScreenshot as deleteScreenshotRecord,
+} from "@/lib/screenshots";
 import { screenshotInputSchema } from "@/lib/screenshot-validation";
 import {
   createProjectInputSchema,
@@ -193,6 +197,30 @@ export async function createScreenshotAction(
   revalidateProjectViews();
 
   return { success: true };
+}
+
+/** Deletes a feature and its dependent screenshots after admin authorization. */
+export async function deleteFeatureAction(featureId: string): Promise<void> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(featureId).success) {
+    throw new Error("Invalid feature ID.");
+  }
+
+  await deleteFeatureRecord(featureId);
+  revalidateProjectViews();
+}
+
+/** Deletes one screenshot after admin authorization. */
+export async function deleteScreenshotAction(screenshotId: string): Promise<void> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(screenshotId).success) {
+    throw new Error("Invalid screenshot ID.");
+  }
+
+  await deleteScreenshotRecord(screenshotId);
+  revalidateProjectViews();
 }
 
 /** Changes only the publication state from the protected management view. */

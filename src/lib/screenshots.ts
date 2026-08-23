@@ -23,3 +23,8 @@ export async function createScreenshot(
     },
   });
 }
+
+/** Deletes one screenshot from its feature. */
+export async function deleteScreenshot(screenshotId: string): Promise<void> {
+  await prisma.screenshot.delete({ where: { id: screenshotId } });
+}

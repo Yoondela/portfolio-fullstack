@@ -31,7 +31,8 @@
   - ✅ Render published projects.
   - ✅ Render project features.
   - ✅ Add and edit project features in project forms.
-  - ✅ Add URL-based screenshots to existing features and render their links.
+- ✅ Add URL-based screenshots to existing features and render them publicly.
+- ✅ Remove project features and screenshots.
 
 ## 4. UI / Frontend
 

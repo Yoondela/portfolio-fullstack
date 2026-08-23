@@ -3,7 +3,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const {
   mockCreateProject,
   mockCreateProjectWithFeatures,
+  mockDeleteFeature,
   mockDeleteProject,
+  mockDeleteScreenshot,
   mockRedirect,
   mockRequireAdmin,
   mockRevalidatePath,
@@ -13,7 +15,9 @@ const {
 } = vi.hoisted(() => ({
   mockCreateProject: vi.fn(),
   mockCreateProjectWithFeatures: vi.fn(),
+  mockDeleteFeature: vi.fn(),
   mockDeleteProject: vi.fn(),
+  mockDeleteScreenshot: vi.fn(),
   mockRedirect: vi.fn(),
   mockRequireAdmin: vi.fn(),
   mockRevalidatePath: vi.fn(),
@@ -32,12 +36,18 @@ vi.mock("@/lib/projects", () => ({
   updateProject: mockUpdateProject,
   updateProjectWithFeatures: mockUpdateProjectWithFeatures,
 }));
-vi.mock("@/lib/screenshots", () => ({ createScreenshot: mockCreateScreenshot }));
+vi.mock("@/lib/features", () => ({ deleteFeature: mockDeleteFeature }));
+vi.mock("@/lib/screenshots", () => ({
+  createScreenshot: mockCreateScreenshot,
+  deleteScreenshot: mockDeleteScreenshot,
+}));
 
 import {
   createProjectAction,
   createScreenshotAction,
+  deleteFeatureAction,
   deleteProjectAction,
+  deleteScreenshotAction,
   setProjectPublishedAction,
   updateProjectAction,
 } from "../actions";
@@ -259,6 +269,38 @@ describe("project Server Actions", () => {
     ).resolves.toEqual({ success: false, error: "Invalid screenshot data." });
 
     expect(mockCreateScreenshot).not.toHaveBeenCalled();
+  });
+
+  it("rejects unauthorized users before deleting a feature", async () => {
+    mockRequireAdmin.mockRejectedValue(new Error("Forbidden"));
+
+    await expect(deleteFeatureAction(projectId)).rejects.toThrow("Forbidden");
+
+    expect(mockDeleteFeature).not.toHaveBeenCalled();
+  });
+
+  it("deletes a feature and revalidates affected views", async () => {
+    await deleteFeatureAction(projectId);
+
+    expect(mockDeleteFeature).toHaveBeenCalledWith(projectId);
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/");
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/manage/projects");
+  });
+
+  it("rejects unauthorized users before deleting a screenshot", async () => {
+    mockRequireAdmin.mockRejectedValue(new Error("Forbidden"));
+
+    await expect(deleteScreenshotAction(projectId)).rejects.toThrow("Forbidden");
+
+    expect(mockDeleteScreenshot).not.toHaveBeenCalled();
+  });
+
+  it("deletes a screenshot and revalidates affected views", async () => {
+    await deleteScreenshotAction(projectId);
+
+    expect(mockDeleteScreenshot).toHaveBeenCalledWith(projectId);
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/");
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/manage/projects");
   });
 
   it("updates only the submitted fields", async () => {

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import type { Feature, Screenshot } from "@/generated/prisma/client";
+import { deleteFeatureAction, deleteScreenshotAction } from "./actions";
 import { ScreenshotForm } from "./screenshot-form";
 
 type EditableFeature = Pick<
@@ -18,6 +19,8 @@ export function FeatureFields({
   initialFeatures?: EditableFeature[];
 }) {
   const [features, setFeatures] = useState<FeatureDraft[]>(initialFeatures);
+  const [isRemovingFeature, startFeatureRemoval] = useTransition();
+  const [isRemovingScreenshot, startScreenshotRemoval] = useTransition();
 
   function updateFeature<K extends keyof FeatureDraft>(
     index: number,
@@ -90,7 +93,61 @@ export function FeatureFields({
               Remove
             </button>
           )}
-          {feature.id && <ScreenshotForm featureId={feature.id} />}
+          {feature.id && (
+            <>
+              <button
+                type="button"
+                disabled={isRemovingFeature}
+                onClick={() => {
+                  if (
+                    !window.confirm(
+                      "Remove this feature and its screenshots? This cannot be undone."
+                    )
+                  ) {
+                    return;
+                  }
+                  startFeatureRemoval(() => deleteFeatureAction(feature.id!));
+                }}
+                className="rounded border border-red-700 px-3 py-2 text-sm text-red-700 disabled:opacity-50 dark:border-red-500 dark:text-red-400"
+              >
+                {isRemovingFeature ? "Removing..." : "Remove feature"}
+              </button>
+              {feature.screenshots.length > 0 && (
+                <ul className="space-y-2 border-t border-zinc-200 pt-3 text-sm dark:border-zinc-800">
+                  {feature.screenshots.map((screenshot) => (
+                    <li
+                      key={screenshot.id}
+                      className="flex items-center justify-between gap-3"
+                    >
+                      <span>{screenshot.altText}</span>
+                      <button
+                        type="button"
+                        disabled={isRemovingScreenshot}
+                        onClick={() => {
+                          if (
+                            !window.confirm(
+                              "Remove this screenshot? This cannot be undone."
+                            )
+                          ) {
+                            return;
+                          }
+                          startScreenshotRemoval(() =>
+                            deleteScreenshotAction(screenshot.id)
+                          );
+                        }}
+                        className="rounded border border-red-700 px-3 py-1 text-sm text-red-700 disabled:opacity-50 dark:border-red-500 dark:text-red-400"
+                      >
+                        {isRemovingScreenshot
+                          ? "Removing..."
+                          : "Remove screenshot"}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <ScreenshotForm featureId={feature.id} />
+            </>
+          )}
         </div>
       ))}
       <button
