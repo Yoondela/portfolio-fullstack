@@ -4,6 +4,7 @@ import {
   getProjectById,
   updateProject,
   deleteProject,
+  getProjects,
   getPublishedProjects,
 } from "../projects";
 import { prisma } from "../prisma";
@@ -135,6 +136,38 @@ describe("Project CRUD Operations", () => {
 
     const found = published.some((p) => p.id === unpublished.id);
     expect(found).toBe(false);
+  });
+
+  it("should include published and draft projects in getProjects", async () => {
+    const published = await createProject({
+      name: "Management Published",
+      description: "Visible in management",
+      displayOrder: 101,
+      published: true,
+    });
+    const draft = await createProject({
+      name: "Management Draft",
+      description: "Visible in management",
+      displayOrder: 102,
+      published: false,
+    });
+    testProjectId = draft.id;
+
+    try {
+      const projects = await getProjects();
+      const publishedIndex = projects.findIndex(
+        (project) => project.id === published.id
+      );
+      const draftIndex = projects.findIndex(
+        (project) => project.id === draft.id
+      );
+
+      expect(publishedIndex).not.toBe(-1);
+      expect(draftIndex).not.toBe(-1);
+      expect(publishedIndex).toBeLessThan(draftIndex);
+    } finally {
+      await deleteProject(published.id);
+    }
   });
 
   it("should include published projects in getPublishedProjects", async () => {

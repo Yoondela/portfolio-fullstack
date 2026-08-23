@@ -18,10 +18,11 @@
 
 - 3.1 Database milestone cleanup ✅
 - 3.2 Authentication / authorization ✅
-- 3.3 Server Actions — **current**
+- 3.3 Server Actions ✅
   - Use Server Actions for project-management mutations.
   - This follows ADR-004; no new ADR is needed.
-- 3.4 Project management flow
+- 3.4 Project management flow — **curent**
+  - ✅ Protect `/manage` server-side and list projects.
   - Create, edit, delete, publish/unpublish
 - 3.5 Public portfolio rendering
   - Projects, features, screenshots

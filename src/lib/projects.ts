@@ -16,6 +16,16 @@ export async function getPublishedProjects(): Promise<Project[]> {
   });
 }
 
+/**
+ * Returns every project for the authorized management interface.
+ * Callers must enforce server-side admin authorization before using this read.
+ */
+export async function getProjects(): Promise<Project[]> {
+  return prisma.project.findMany({
+    orderBy: { displayOrder: "asc" },
+  });
+}
+
 export async function getProjectById(id: string): Promise<Project | null> {
   return prisma.project.findUnique({
     where: { id },

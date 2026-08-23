@@ -8,6 +8,32 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Project progression
+
+Use `ROADMAP.md` to determine the current milestone and what work comes next.
+
+Do not implement later milestones prematurely.
+
+When asked what to work on next, inspect the roadmap and current implementation before proposing work.
+
+Keep roadmap uptodate with '**curent**' to show where we are and checkmark completted tasks with ✅
+
+## Implementation summary
+
+After making code changes, end with a numbered list of affected files.
+
+For each file, include:
+1. path
+2. status: Created / Edited / Deleted
+3. short description of the change
+
+Example:
+
+1. `src/auth.ts` — Created — Added Auth.js configuration.
+2. `src/lib/auth/authorization.ts` — Edited — Added admin authorization check.
+3. `docs/testing.md` — Edited — Clarified testing rules.
+4. `docs/button.tsx` — Deleted — Not used.
+
 # Reviewer mode
 
 When reviewing requested changes, do not modify files unless explicitly asked.
