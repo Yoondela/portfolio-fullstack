@@ -24,6 +24,7 @@ export const initialProjectActionState: ProjectActionResult = {
 };
 
 const projectIdSchema = z.string().uuid();
+const publishedSchema = z.boolean();
 
 /**
  * Converts browser form values to the application's typed project input.
@@ -121,6 +122,24 @@ export async function updateProjectAction(
   revalidateProjectViews(projectId);
 
   return { success: true };
+}
+
+/** Changes only the publication state from the protected management view. */
+export async function setProjectPublishedAction(
+  projectId: string,
+  published: boolean
+): Promise<void> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(projectId).success) {
+    throw new Error("Invalid project ID.");
+  }
+  if (!publishedSchema.safeParse(published).success) {
+    throw new Error("Invalid publication state.");
+  }
+
+  await updateProjectRecord(projectId, { published });
+  revalidateProjectViews(projectId);
 }
 
 /** Deletes a project and returns the administrator to the project list. */

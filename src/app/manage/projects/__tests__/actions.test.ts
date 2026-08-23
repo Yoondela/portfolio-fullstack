@@ -29,6 +29,7 @@ import {
   createProjectAction,
   deleteProjectAction,
   initialProjectActionState,
+  setProjectPublishedAction,
   updateProjectAction,
 } from "../actions";
 
@@ -168,6 +169,46 @@ describe("project Server Actions", () => {
     ).resolves.toEqual({ success: false, error: "Invalid project data." });
     expect(mockUpdateProject).not.toHaveBeenCalled();
     expect(mockRevalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("rejects unauthorized users before changing publication", async () => {
+    mockRequireAdmin.mockRejectedValue(new Error("Forbidden"));
+
+    await expect(
+      setProjectPublishedAction(projectId, true)
+    ).rejects.toThrow("Forbidden");
+
+    expect(mockUpdateProject).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid project ID before changing publication", async () => {
+    await expect(
+      setProjectPublishedAction("not-a-uuid", true)
+    ).rejects.toThrow("Invalid project ID.");
+
+    expect(mockUpdateProject).not.toHaveBeenCalled();
+    expect(mockRevalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid publication state before updating", async () => {
+    await expect(
+      setProjectPublishedAction(projectId, "true" as unknown as boolean)
+    ).rejects.toThrow("Invalid publication state.");
+
+    expect(mockUpdateProject).not.toHaveBeenCalled();
+    expect(mockRevalidatePath).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["publishes", true],
+    ["unpublishes", false],
+  ])("%s a project and revalidates affected views", async (_, published) => {
+    await setProjectPublishedAction(projectId, published);
+
+    expect(mockUpdateProject).toHaveBeenCalledWith(projectId, { published });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/");
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/manage/projects");
+    expect(mockRevalidatePath).toHaveBeenCalledWith(`/manage/projects/${projectId}`);
   });
 
   it("rejects an invalid project ID before deleting", async () => {

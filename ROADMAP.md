@@ -21,13 +21,13 @@
 - 3.3 Server Actions ✅
   - Use Server Actions for project-management mutations.
   - This follows ADR-004; no new ADR is needed.
-- 3.4 Project management flow — **curent**
+- 3.4 Project management flow ✅
   - ✅ Protect `/manage` server-side and list projects.
   - ✅ Create draft projects.
   - ✅ Edit project details.
   - ✅ Delete projects.
-  - Publish/unpublish
-- 3.5 Public portfolio rendering
+  - ✅ Publish/unpublish projects.
+- 3.5 Public portfolio rendering — **curent**
   - Projects, features, screenshots
 
 ## 4. UI / Frontend
