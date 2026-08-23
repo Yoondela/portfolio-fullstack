@@ -29,7 +29,9 @@
   - ✅ Publish/unpublish projects.
 - 3.5 Public portfolio rendering — **curent**
   - ✅ Render published projects.
-  - Features, screenshots
+  - ✅ Render project features.
+  - ✅ Add and edit project features in project forms.
+  - Screenshots
 
 ## 4. UI / Frontend
 

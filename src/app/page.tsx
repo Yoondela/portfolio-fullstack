@@ -46,6 +46,22 @@ export default async function Home() {
                     </ul>
                   )}
 
+                  {project.features.length > 0 && (
+                    <section className="mt-4">
+                      <h3 className="font-medium">Features</h3>
+                      <ul className="mt-2 space-y-2">
+                        {project.features.map((feature) => (
+                          <li key={feature.id}>
+                            <h4 className="text-sm font-medium">{feature.name}</h4>
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                              {feature.description}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+
                   {(websiteUrl || githubUrl) && (
                     <p className="mt-3 flex gap-3 text-sm">
                       {websiteUrl && (

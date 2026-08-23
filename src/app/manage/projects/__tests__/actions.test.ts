@@ -2,18 +2,22 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const {
   mockCreateProject,
+  mockCreateProjectWithFeatures,
   mockDeleteProject,
   mockRedirect,
   mockRequireAdmin,
   mockRevalidatePath,
   mockUpdateProject,
+  mockUpdateProjectWithFeatures,
 } = vi.hoisted(() => ({
   mockCreateProject: vi.fn(),
+  mockCreateProjectWithFeatures: vi.fn(),
   mockDeleteProject: vi.fn(),
   mockRedirect: vi.fn(),
   mockRequireAdmin: vi.fn(),
   mockRevalidatePath: vi.fn(),
   mockUpdateProject: vi.fn(),
+  mockUpdateProjectWithFeatures: vi.fn(),
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: mockRevalidatePath }));
@@ -21,8 +25,10 @@ vi.mock("next/navigation", () => ({ redirect: mockRedirect }));
 vi.mock("@/lib/auth/authorization", () => ({ requireAdmin: mockRequireAdmin }));
 vi.mock("@/lib/projects", () => ({
   createProject: mockCreateProject,
+  createProjectWithFeatures: mockCreateProjectWithFeatures,
   deleteProject: mockDeleteProject,
   updateProject: mockUpdateProject,
+  updateProjectWithFeatures: mockUpdateProjectWithFeatures,
 }));
 
 import {
@@ -104,6 +110,53 @@ describe("project Server Actions", () => {
     expect(mockRevalidatePath).toHaveBeenCalledWith("/manage/projects");
   });
 
+  it("creates submitted features with a new draft project", async () => {
+    const formData = validProjectFormData();
+    formData.append("featureIds", "");
+    formData.append("featureNames", "Project feature");
+    formData.append("featureDescriptions", "A feature description.");
+    formData.append("featureDisplayOrders", "0");
+    mockCreateProjectWithFeatures.mockResolvedValue({ id: projectId });
+
+    await expect(
+      createProjectAction(initialProjectActionState, formData)
+    ).resolves.toEqual({ success: true });
+
+    expect(mockCreateProjectWithFeatures).toHaveBeenCalledWith(
+      {
+        name: "Test project",
+        description: "A test project.",
+        technologies: ["TypeScript", "Next.js"],
+        websiteUrl: "",
+        githubUrl: "",
+        displayOrder: 1,
+        published: false,
+      },
+      [
+        {
+          name: "Project feature",
+          description: "A feature description.",
+          displayOrder: 0,
+        },
+      ]
+    );
+  });
+
+  it("rejects invalid feature input before creating a project", async () => {
+    const formData = validProjectFormData();
+    formData.append("featureIds", "");
+    formData.append("featureNames", "");
+    formData.append("featureDescriptions", "Missing a feature name.");
+    formData.append("featureDisplayOrders", "0");
+
+    await expect(
+      createProjectAction(initialProjectActionState, formData)
+    ).resolves.toEqual({ success: false, error: "Invalid feature data." });
+
+    expect(mockCreateProject).not.toHaveBeenCalled();
+    expect(mockCreateProjectWithFeatures).not.toHaveBeenCalled();
+  });
+
   it("updates project fields while ignoring a submitted published value", async () => {
     mockUpdateProject.mockResolvedValue({ id: projectId });
 
@@ -122,6 +175,46 @@ describe("project Server Actions", () => {
       displayOrder: 1,
     });
     expect(mockRevalidatePath).toHaveBeenCalledWith(`/manage/projects/${projectId}`);
+  });
+
+  it("adds and edits submitted features with a project update", async () => {
+    const formData = validProjectFormData();
+    formData.append("featureIds", "22222222-2222-4222-8222-222222222222");
+    formData.append("featureNames", "Updated feature");
+    formData.append("featureDescriptions", "An updated feature description.");
+    formData.append("featureDisplayOrders", "2");
+    formData.append("featureIds", "");
+    formData.append("featureNames", "New feature");
+    formData.append("featureDescriptions", "A new feature description.");
+    formData.append("featureDisplayOrders", "3");
+    mockUpdateProjectWithFeatures.mockResolvedValue({ id: projectId });
+
+    await expect(
+      updateProjectAction(projectId, initialProjectActionState, formData)
+    ).resolves.toEqual({ success: true });
+
+    expect(mockUpdateProjectWithFeatures).toHaveBeenCalledWith(
+      projectId,
+      {
+        name: "Test project",
+        description: "A test project.",
+        technologies: ["TypeScript", "Next.js"],
+        displayOrder: 1,
+      },
+      [
+        {
+          id: "22222222-2222-4222-8222-222222222222",
+          name: "Updated feature",
+          description: "An updated feature description.",
+          displayOrder: 2,
+        },
+        {
+          name: "New feature",
+          description: "A new feature description.",
+          displayOrder: 3,
+        },
+      ]
+    );
   });
 
   it("updates only the submitted fields", async () => {

@@ -1,8 +1,10 @@
 import { describe, it, expect, afterAll, afterEach } from "vitest";
 import {
   createProject,
+  createProjectWithFeatures,
   getProjectById,
   updateProject,
+  updateProjectWithFeatures,
   deleteProject,
   getProjects,
   getPublishedProjects,
@@ -49,6 +51,54 @@ describe("Project CRUD Operations", () => {
     expect(project.websiteUrl).toBeNull();
     expect(project.githubUrl).toBeNull();
   });
+
+  it("should create and update project features", async () => {
+    const project = await createProjectWithFeatures(
+      {
+        name: "Project with initial feature",
+        description: "Tests feature mutations.",
+        displayOrder: 1,
+        published: false,
+      },
+      [
+        {
+          name: "Initial feature",
+          description: "Created with the project.",
+          displayOrder: 0,
+        },
+      ]
+    );
+    testProjectId = project.id;
+
+    const created = await getProjectById(project.id);
+    const initialFeature = created?.features[0];
+    if (!initialFeature) throw new Error("Expected the initial feature");
+
+    await updateProjectWithFeatures(
+      project.id,
+      { description: "Updated project description." },
+      [
+        {
+          id: initialFeature.id,
+          name: "Updated feature",
+          description: "Updated feature description.",
+          displayOrder: 1,
+        },
+        {
+          name: "New feature",
+          description: "Added during project edit.",
+          displayOrder: 0,
+        },
+      ]
+    );
+
+    const updated = await getProjectById(project.id);
+    expect(updated?.description).toBe("Updated project description.");
+    expect(updated?.features.map((feature) => feature.name)).toEqual([
+      "New feature",
+      "Updated feature",
+    ]);
+  }, 15_000);
 
   it("should retrieve a project by ID", async () => {
     const created = await createProject({
@@ -184,6 +234,41 @@ describe("Project CRUD Operations", () => {
     const found = published.find((p) => p.id === created.id);
     expect(found).not.toBeUndefined();
     expect(found!.name).toBe("Published Project");
+  });
+
+  it("should include project features in displayOrder", async () => {
+    const project = await createProject({
+      name: "Project with features",
+      description: "Features are public content.",
+      displayOrder: 103,
+      published: true,
+    });
+    testProjectId = project.id;
+
+    const secondFeature = await prisma.feature.create({
+      data: {
+        projectId: project.id,
+        name: "Second feature",
+        description: "Display order 2",
+        displayOrder: 2,
+      },
+    });
+    const firstFeature = await prisma.feature.create({
+      data: {
+        projectId: project.id,
+        name: "First feature",
+        description: "Display order 1",
+        displayOrder: 1,
+      },
+    });
+
+    const published = await getPublishedProjects();
+    const found = published.find((candidate) => candidate.id === project.id);
+
+    expect(found?.features.map((feature) => feature.id)).toEqual([
+      firstFeature.id,
+      secondFeature.id,
+    ]);
   });
 
   it("should order published projects by displayOrder", async () => {

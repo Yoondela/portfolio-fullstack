@@ -27,6 +27,26 @@ describe("Home", () => {
         githubUrl: "https://github.com/example/project",
         displayOrder: 1,
         published: true,
+        features: [
+          {
+            id: "22222222-2222-4222-8222-222222222222",
+            projectId: "11111111-1111-4111-8111-111111111111",
+            name: "First feature",
+            description: "The first public feature.",
+            displayOrder: 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: "33333333-3333-4333-8333-333333333333",
+            projectId: "11111111-1111-4111-8111-111111111111",
+            name: "Second feature",
+            description: "The second public feature.",
+            displayOrder: 2,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
       },
     ]);
 
@@ -37,6 +57,11 @@ describe("Home", () => {
     expect(markup).toContain("Published project");
     expect(markup).toContain("A public project.");
     expect(markup).toContain("TypeScript");
+    expect(markup).toContain("First feature");
+    expect(markup).toContain("The first public feature.");
+    expect(markup.indexOf("First feature")).toBeLessThan(
+      markup.indexOf("Second feature")
+    );
     expect(markup).toContain('href="https://example.com"');
     expect(markup).toContain('href="https://github.com/example/project"');
   });
@@ -61,6 +86,7 @@ describe("Home", () => {
         githubUrl: "javascript:alert(2)",
         displayOrder: 1,
         published: true,
+        features: [],
       },
     ]);
 
