@@ -36,6 +36,16 @@ describe("Home", () => {
             displayOrder: 1,
             createdAt: new Date(),
             updatedAt: new Date(),
+            screenshots: [
+              {
+                id: "44444444-4444-4444-8444-444444444444",
+                featureId: "22222222-2222-4222-8222-222222222222",
+                url: "https://example.com/screenshot.png",
+                altText: "First feature screenshot",
+                displayOrder: 0,
+                createdAt: new Date(),
+              },
+            ],
           },
           {
             id: "33333333-3333-4333-8333-333333333333",
@@ -45,6 +55,7 @@ describe("Home", () => {
             displayOrder: 2,
             createdAt: new Date(),
             updatedAt: new Date(),
+            screenshots: [],
           },
         ],
       },
@@ -59,6 +70,8 @@ describe("Home", () => {
     expect(markup).toContain("TypeScript");
     expect(markup).toContain("First feature");
     expect(markup).toContain("The first public feature.");
+    expect(markup).toContain('src="https://example.com/screenshot.png"');
+    expect(markup).toContain('alt="First feature screenshot"');
     expect(markup.indexOf("First feature")).toBeLessThan(
       markup.indexOf("Second feature")
     );

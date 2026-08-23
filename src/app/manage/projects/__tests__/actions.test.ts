@@ -7,6 +7,7 @@ const {
   mockRedirect,
   mockRequireAdmin,
   mockRevalidatePath,
+  mockCreateScreenshot,
   mockUpdateProject,
   mockUpdateProjectWithFeatures,
 } = vi.hoisted(() => ({
@@ -16,6 +17,7 @@ const {
   mockRedirect: vi.fn(),
   mockRequireAdmin: vi.fn(),
   mockRevalidatePath: vi.fn(),
+  mockCreateScreenshot: vi.fn(),
   mockUpdateProject: vi.fn(),
   mockUpdateProjectWithFeatures: vi.fn(),
 }));
@@ -30,9 +32,11 @@ vi.mock("@/lib/projects", () => ({
   updateProject: mockUpdateProject,
   updateProjectWithFeatures: mockUpdateProjectWithFeatures,
 }));
+vi.mock("@/lib/screenshots", () => ({ createScreenshot: mockCreateScreenshot }));
 
 import {
   createProjectAction,
+  createScreenshotAction,
   deleteProjectAction,
   setProjectPublishedAction,
   updateProjectAction,
@@ -215,6 +219,46 @@ describe("project Server Actions", () => {
         },
       ]
     );
+  });
+
+  it("creates a screenshot after admin authorization", async () => {
+    const formData = new FormData();
+    formData.set("url", "https://example.com/screenshot.png");
+    formData.set("altText", "Project screenshot");
+    formData.set("displayOrder", "0");
+
+    await expect(
+      createScreenshotAction(projectId, initialProjectActionState, formData)
+    ).resolves.toEqual({ success: true });
+
+    expect(mockCreateScreenshot).toHaveBeenCalledWith(projectId, {
+      url: "https://example.com/screenshot.png",
+      altText: "Project screenshot",
+      displayOrder: 0,
+    });
+  });
+
+  it("rejects unauthorized users before creating a screenshot", async () => {
+    mockRequireAdmin.mockRejectedValue(new Error("Forbidden"));
+
+    await expect(
+      createScreenshotAction(projectId, initialProjectActionState, new FormData())
+    ).rejects.toThrow("Forbidden");
+
+    expect(mockCreateScreenshot).not.toHaveBeenCalled();
+  });
+
+  it("rejects invalid screenshot input before writing", async () => {
+    const formData = new FormData();
+    formData.set("url", "javascript:alert(1)");
+    formData.set("altText", "Unsafe screenshot");
+    formData.set("displayOrder", "0");
+
+    await expect(
+      createScreenshotAction(projectId, initialProjectActionState, formData)
+    ).resolves.toEqual({ success: false, error: "Invalid screenshot data." });
+
+    expect(mockCreateScreenshot).not.toHaveBeenCalled();
   });
 
   it("updates only the submitted fields", async () => {

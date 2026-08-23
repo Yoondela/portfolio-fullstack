@@ -13,9 +13,10 @@ import {
   type FeatureInput,
   type ProjectFeatureInput,
 } from "./feature-validation";
-import type { Feature, Project } from "@/generated/prisma/client";
+import type { Feature, Project, Screenshot } from "@/generated/prisma/client";
 
-type ProjectWithFeatures = Project & { features: Feature[] };
+type FeatureWithScreenshots = Feature & { screenshots: Screenshot[] };
+type ProjectWithFeatures = Project & { features: FeatureWithScreenshots[] };
 
 /** Returns public projects with their features in configured display order. */
 export async function getPublishedProjects(): Promise<ProjectWithFeatures[]> {
@@ -25,6 +26,11 @@ export async function getPublishedProjects(): Promise<ProjectWithFeatures[]> {
     include: {
       features: {
         orderBy: { displayOrder: "asc" },
+        include: {
+          screenshots: {
+            orderBy: { displayOrder: "asc" },
+          },
+        },
       },
     },
   });
@@ -48,6 +54,11 @@ export async function getProjectById(
     include: {
       features: {
         orderBy: { displayOrder: "asc" },
+        include: {
+          screenshots: {
+            orderBy: { displayOrder: "asc" },
+          },
+        },
       },
     },
   });

@@ -12,6 +12,8 @@ import {
   updateProjectWithFeatures as updateProjectWithFeaturesRecord,
 } from "@/lib/projects";
 import { projectFeatureInputSchema } from "@/lib/feature-validation";
+import { createScreenshot as createScreenshotRecord } from "@/lib/screenshots";
+import { screenshotInputSchema } from "@/lib/screenshot-validation";
 import {
   createProjectInputSchema,
   updateProjectInputSchema,
@@ -164,6 +166,31 @@ export async function updateProjectAction(
     await updateProjectRecord(projectId, input.data);
   }
   revalidateProjectViews(projectId);
+
+  return { success: true };
+}
+
+/** Creates a screenshot record for an existing feature after admin authorization. */
+export async function createScreenshotAction(
+  featureId: string,
+  _previousState: ProjectActionResult,
+  formData: FormData
+): Promise<ProjectActionResult> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(featureId).success) {
+    return { success: false, error: "Invalid feature ID." };
+  }
+
+  const input = screenshotInputSchema.safeParse({
+    url: formData.get("url"),
+    altText: formData.get("altText"),
+    displayOrder: Number(formData.get("displayOrder")),
+  });
+  if (!input.success) return { success: false, error: "Invalid screenshot data." };
+
+  await createScreenshotRecord(featureId, input.data);
+  revalidateProjectViews();
 
   return { success: true };
 }

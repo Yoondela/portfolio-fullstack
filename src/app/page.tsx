@@ -56,6 +56,25 @@ export default async function Home() {
                             <p className="text-sm text-zinc-600 dark:text-zinc-400">
                               {feature.description}
                             </p>
+                            {feature.screenshots.length > 0 && (
+                              <ul className="mt-2 space-y-1">
+                                {feature.screenshots.map((screenshot) => {
+                                  const url = getSafePublicUrl(screenshot.url);
+                                  return url ? (
+                                    <li key={screenshot.id}>
+                                      {/* Screenshot hosts are administrator-configured URLs, so
+                                       * next/image remote patterns cannot be fixed at build time. */}
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={url}
+                                        alt={screenshot.altText}
+                                        className="max-h-64 rounded border border-zinc-200 dark:border-zinc-800"
+                                      />
+                                    </li>
+                                  ) : null;
+                                })}
+                              </ul>
+                            )}
                           </li>
                         ))}
                       </ul>

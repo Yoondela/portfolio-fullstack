@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { Feature, Project } from "@/generated/prisma/client";
+import type { Feature, Project, Screenshot } from "@/generated/prisma/client";
 import { initialProjectActionState } from "../action-state";
 import { updateProjectAction } from "../actions";
 import { FeatureFields } from "../feature-fields";
@@ -15,7 +15,11 @@ type EditableProject = Pick<
   | "websiteUrl"
   | "githubUrl"
   | "displayOrder"
-> & { features: Pick<Feature, "id" | "name" | "description" | "displayOrder">[] };
+> & {
+  features: (Pick<Feature, "id" | "name" | "description" | "displayOrder"> & {
+    screenshots: Pick<Screenshot, "id" | "url" | "altText" | "displayOrder">[];
+  })[];
+};
 
 /** Updates project details and provides minimal add/edit controls for features. */
 export function EditProjectForm({ project }: { project: EditableProject }) {

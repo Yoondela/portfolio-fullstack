@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { Feature } from "@/generated/prisma/client";
+import type { Feature, Screenshot } from "@/generated/prisma/client";
+import { ScreenshotForm } from "./screenshot-form";
 
 type EditableFeature = Pick<
   Feature,
   "id" | "name" | "description" | "displayOrder"
->;
+> & { screenshots: Pick<Screenshot, "id" | "url" | "altText" | "displayOrder">[] };
 
 type FeatureDraft = Omit<EditableFeature, "id"> & { id?: string };
 
@@ -89,6 +90,7 @@ export function FeatureFields({
               Remove
             </button>
           )}
+          {feature.id && <ScreenshotForm featureId={feature.id} />}
         </div>
       ))}
       <button
@@ -100,6 +102,7 @@ export function FeatureFields({
               name: "",
               description: "",
               displayOrder: current.length,
+              screenshots: [],
             },
           ])
         }
