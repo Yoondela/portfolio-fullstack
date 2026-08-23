@@ -1,5 +1,6 @@
 import { Children, isValidElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { EditProjectForm } from "../edit-project-form";
 
 const { mockGetProjectById, mockRequireAdmin } = vi.hoisted(() => ({
   mockGetProjectById: vi.fn(),
@@ -45,7 +46,9 @@ describe("EditProjectPage", () => {
     const page = await EditProjectPage({
       params: Promise.resolve({ id: projectId }),
     });
-    const form = Children.toArray(page.props.children).at(-1);
+    const form = Children.toArray(page.props.children).find(
+      (child) => isValidElement(child) && child.type === EditProjectForm
+    );
 
     expect(mockGetProjectById).toHaveBeenCalledWith(projectId);
     if (!isValidElement<{ project: typeof project }>(form)) {

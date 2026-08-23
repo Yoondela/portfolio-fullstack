@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/authorization";
 import { getProjectById } from "@/lib/projects";
+import { DeleteProjectButton } from "./delete-project-button";
 import { EditProjectForm } from "./edit-project-form";
 
 const projectIdSchema = z.string().uuid();
@@ -31,6 +32,7 @@ export default async function EditProjectPage({
       </Link>
       <h1 className="mt-4 text-2xl font-semibold">Edit Project</h1>
       <EditProjectForm project={project} />
+      <DeleteProjectButton projectId={project.id} />
     </main>
   );
 }

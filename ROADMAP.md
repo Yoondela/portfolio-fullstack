@@ -25,7 +25,8 @@
   - ✅ Protect `/manage` server-side and list projects.
   - ✅ Create draft projects.
   - ✅ Edit project details.
-  - Delete, publish/unpublish
+  - ✅ Delete projects.
+  - Publish/unpublish
 - 3.5 Public portfolio rendering
   - Projects, features, screenshots
 

@@ -3,18 +3,21 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const {
   mockCreateProject,
   mockDeleteProject,
+  mockRedirect,
   mockRequireAdmin,
   mockRevalidatePath,
   mockUpdateProject,
 } = vi.hoisted(() => ({
   mockCreateProject: vi.fn(),
   mockDeleteProject: vi.fn(),
+  mockRedirect: vi.fn(),
   mockRequireAdmin: vi.fn(),
   mockRevalidatePath: vi.fn(),
   mockUpdateProject: vi.fn(),
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: mockRevalidatePath }));
+vi.mock("next/navigation", () => ({ redirect: mockRedirect }));
 vi.mock("@/lib/auth/authorization", () => ({ requireAdmin: mockRequireAdmin }));
 vi.mock("@/lib/projects", () => ({
   createProject: mockCreateProject,
@@ -168,20 +171,30 @@ describe("project Server Actions", () => {
   });
 
   it("rejects an invalid project ID before deleting", async () => {
-    await expect(deleteProjectAction("not-a-uuid")).resolves.toEqual({
-      success: false,
-      error: "Invalid project ID.",
-    });
+    await expect(deleteProjectAction("not-a-uuid")).rejects.toThrow(
+      "Invalid project ID."
+    );
     expect(mockDeleteProject).not.toHaveBeenCalled();
   });
 
-  it("deletes a project and revalidates project views", async () => {
-    await expect(deleteProjectAction(projectId)).resolves.toEqual({
-      success: true,
+  it("rejects unauthorized users before deleting a project", async () => {
+    mockRequireAdmin.mockRejectedValue(new Error("Unauthorized"));
+
+    await expect(deleteProjectAction(projectId)).rejects.toThrow("Unauthorized");
+
+    expect(mockDeleteProject).not.toHaveBeenCalled();
+  });
+
+  it("deletes a project, revalidates the list, and redirects", async () => {
+    mockRedirect.mockImplementation(() => {
+      throw new Error("NEXT_REDIRECT");
     });
+
+    await expect(deleteProjectAction(projectId)).rejects.toThrow("NEXT_REDIRECT");
 
     expect(mockDeleteProject).toHaveBeenCalledWith(projectId);
     expect(mockRevalidatePath).toHaveBeenCalledWith("/");
     expect(mockRevalidatePath).toHaveBeenCalledWith("/manage/projects");
+    expect(mockRedirect).toHaveBeenCalledWith("/manage/projects");
   });
 });

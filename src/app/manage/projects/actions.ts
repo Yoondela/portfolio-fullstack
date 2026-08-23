@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/authorization";
 import {
@@ -122,18 +123,17 @@ export async function updateProjectAction(
   return { success: true };
 }
 
-/** Deletes a project after validating its client-supplied identifier. */
+/** Deletes a project and returns the administrator to the project list. */
 export async function deleteProjectAction(
   projectId: string
-): Promise<ProjectActionResult> {
+): Promise<void> {
   await requireAdmin();
 
   if (!projectIdSchema.safeParse(projectId).success) {
-    return { success: false, error: "Invalid project ID." };
+    throw new Error("Invalid project ID.");
   }
 
   await deleteProjectRecord(projectId);
   revalidateProjectViews();
-
-  return { success: true };
+  redirect("/manage/projects");
 }
