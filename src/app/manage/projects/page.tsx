@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/authorization";
 import { getProjects } from "@/lib/projects";
 
@@ -8,7 +9,15 @@ export default async function ManageProjectsPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl p-6">
-      <h1 className="text-2xl font-semibold">Projects</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold">Projects</h1>
+        <Link
+          href="/manage/projects/new"
+          className="rounded bg-foreground px-4 py-2 text-sm font-medium text-background"
+        >
+          New Project
+        </Link>
+      </div>
 
       {projects.length === 0 ? (
         <p className="mt-4 text-zinc-600">No projects yet.</p>

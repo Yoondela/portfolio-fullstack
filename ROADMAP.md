@@ -23,7 +23,8 @@
   - This follows ADR-004; no new ADR is needed.
 - 3.4 Project management flow — **curent**
   - ✅ Protect `/manage` server-side and list projects.
-  - Create, edit, delete, publish/unpublish
+  - ✅ Create draft projects.
+  - Edit, delete, publish/unpublish
 - 3.5 Public portfolio rendering
   - Projects, features, screenshots
 

@@ -13,7 +13,14 @@ import {
   updateProjectInputSchema,
 } from "@/lib/project-validation";
 
-type ProjectActionResult = { success: true } | { success: false; error: string };
+export type ProjectActionResult =
+  | { success: true }
+  | { success: false; error: string };
+
+export const initialProjectActionState: ProjectActionResult = {
+  success: false,
+  error: "",
+};
 
 const projectIdSchema = z.string().uuid();
 
@@ -25,13 +32,10 @@ function projectInputFromFormData(formData: FormData) {
   return {
     name: formData.get("name"),
     description: formData.get("description"),
-    technologies: formData.getAll("technologies"),
+    technologies: formData.getAll("technologies").filter((value) => value !== ""),
     websiteUrl: formData.get("websiteUrl") ?? "",
     githubUrl: formData.get("githubUrl") ?? "",
     displayOrder: Number(formData.get("displayOrder")),
-    published:
-      formData.get("published") === "true" ||
-      formData.get("published") === "on",
   };
 }
 
@@ -76,8 +80,12 @@ function revalidateProjectViews() {
   revalidatePath("/manage/projects");
 }
 
-/** Creates a project from an administrative form submission. */
+/**
+ * Creates a draft project from an administrative form submission.
+ * The first argument supports React's useActionState validation feedback.
+ */
 export async function createProjectAction(
+  _previousState: ProjectActionResult,
   formData: FormData
 ): Promise<ProjectActionResult> {
   await requireAdmin();
@@ -87,7 +95,7 @@ export async function createProjectAction(
   );
   if (!input.success) return { success: false, error: "Invalid project data." };
 
-  await createProjectRecord(input.data);
+  await createProjectRecord({ ...input.data, published: false });
   revalidateProjectViews();
 
   return { success: true };

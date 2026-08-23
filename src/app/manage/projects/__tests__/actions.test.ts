@@ -25,6 +25,7 @@ vi.mock("@/lib/projects", () => ({
 import {
   createProjectAction,
   deleteProjectAction,
+  initialProjectActionState,
   updateProjectAction,
 } from "../actions";
 
@@ -50,9 +51,9 @@ describe("project Server Actions", () => {
   it("rejects unauthenticated users before creating a project", async () => {
     mockRequireAdmin.mockRejectedValue(new Error("Unauthorized"));
 
-    await expect(createProjectAction(validProjectFormData())).rejects.toThrow(
-      "Unauthorized"
-    );
+    await expect(
+      createProjectAction(initialProjectActionState, validProjectFormData())
+    ).rejects.toThrow("Unauthorized");
     expect(mockCreateProject).not.toHaveBeenCalled();
   });
 
@@ -69,19 +70,18 @@ describe("project Server Actions", () => {
     const formData = validProjectFormData();
     formData.set("displayOrder", "not-a-number");
 
-    await expect(createProjectAction(formData)).resolves.toEqual({
-      success: false,
-      error: "Invalid project data.",
-    });
+    await expect(
+      createProjectAction(initialProjectActionState, formData)
+    ).resolves.toEqual({ success: false, error: "Invalid project data." });
     expect(mockCreateProject).not.toHaveBeenCalled();
   });
 
-  it("creates a project and revalidates project views", async () => {
+  it("creates a draft even when published=true is submitted", async () => {
     mockCreateProject.mockResolvedValue({ id: projectId });
 
-    await expect(createProjectAction(validProjectFormData())).resolves.toEqual({
-      success: true,
-    });
+    await expect(
+      createProjectAction(initialProjectActionState, validProjectFormData())
+    ).resolves.toEqual({ success: true });
 
     expect(mockCreateProject).toHaveBeenCalledWith({
       name: "Test project",
@@ -90,7 +90,7 @@ describe("project Server Actions", () => {
       websiteUrl: "",
       githubUrl: "",
       displayOrder: 1,
-      published: true,
+      published: false,
     });
     expect(mockRevalidatePath).toHaveBeenCalledWith("/");
     expect(mockRevalidatePath).toHaveBeenCalledWith("/manage/projects");
