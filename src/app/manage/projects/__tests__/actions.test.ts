@@ -61,7 +61,11 @@ describe("project Server Actions", () => {
     mockRequireAdmin.mockRejectedValue(new Error("Forbidden"));
 
     await expect(
-      updateProjectAction(projectId, validProjectFormData())
+      updateProjectAction(
+        projectId,
+        initialProjectActionState,
+        validProjectFormData()
+      )
     ).rejects.toThrow("Forbidden");
     expect(mockUpdateProject).not.toHaveBeenCalled();
   });
@@ -96,11 +100,15 @@ describe("project Server Actions", () => {
     expect(mockRevalidatePath).toHaveBeenCalledWith("/manage/projects");
   });
 
-  it("updates a project, including its published state", async () => {
+  it("updates project fields while ignoring a submitted published value", async () => {
     mockUpdateProject.mockResolvedValue({ id: projectId });
 
     await expect(
-      updateProjectAction(projectId, validProjectFormData())
+      updateProjectAction(
+        projectId,
+        initialProjectActionState,
+        validProjectFormData()
+      )
     ).resolves.toEqual({ success: true });
 
     expect(mockUpdateProject).toHaveBeenCalledWith(projectId, {
@@ -108,58 +116,53 @@ describe("project Server Actions", () => {
       description: "A test project.",
       technologies: ["TypeScript", "Next.js"],
       displayOrder: 1,
-      published: true,
     });
+    expect(mockRevalidatePath).toHaveBeenCalledWith(`/manage/projects/${projectId}`);
   });
 
   it("updates only the submitted fields", async () => {
     const formData = new FormData();
     formData.set("description", "An updated description.");
 
-    await expect(updateProjectAction(projectId, formData)).resolves.toEqual({
-      success: true,
-    });
+    await expect(
+      updateProjectAction(projectId, initialProjectActionState, formData)
+    ).resolves.toEqual({ success: true });
 
     expect(mockUpdateProject).toHaveBeenCalledWith(projectId, {
       description: "An updated description.",
     });
   });
 
-  it.each([
-    ["publishes", "true", true],
-    ["unpublishes", "false", false],
-  ])("%s a project when only published is submitted", async (_, value, expected) => {
+  it("removes all technologies when only an empty value is submitted", async () => {
     const formData = new FormData();
-    formData.set("published", value);
+    formData.append("technologies", "");
 
-    await expect(updateProjectAction(projectId, formData)).resolves.toEqual({
-      success: true,
-    });
+    await expect(
+      updateProjectAction(projectId, initialProjectActionState, formData)
+    ).resolves.toEqual({ success: true });
 
     expect(mockUpdateProject).toHaveBeenCalledWith(projectId, {
-      published: expected,
+      technologies: [],
     });
   });
 
-  it("rejects an unsupported published value before updating", async () => {
+  it("rejects an update with only a published value", async () => {
     const formData = new FormData();
-    formData.set("published", "unexpected");
+    formData.set("published", "true");
 
-    await expect(updateProjectAction(projectId, formData)).resolves.toEqual({
+    await expect(
+      updateProjectAction(projectId, initialProjectActionState, formData)
+    ).resolves.toEqual({
       success: false,
       error: "Invalid project data.",
     });
     expect(mockUpdateProject).not.toHaveBeenCalled();
-    expect(mockRevalidatePath).not.toHaveBeenCalled();
   });
 
   it("rejects an update with no submitted fields", async () => {
-    await expect(updateProjectAction(projectId, new FormData())).resolves.toEqual(
-      {
-        success: false,
-        error: "Invalid project data.",
-      }
-    );
+    await expect(
+      updateProjectAction(projectId, initialProjectActionState, new FormData())
+    ).resolves.toEqual({ success: false, error: "Invalid project data." });
     expect(mockUpdateProject).not.toHaveBeenCalled();
     expect(mockRevalidatePath).not.toHaveBeenCalled();
   });

@@ -24,7 +24,8 @@
 - 3.4 Project management flow — **curent**
   - ✅ Protect `/manage` server-side and list projects.
   - ✅ Create draft projects.
-  - Edit, delete, publish/unpublish
+  - ✅ Edit project details.
+  - Delete, publish/unpublish
 - 3.5 Public portfolio rendering
   - Projects, features, screenshots
 

@@ -51,7 +51,9 @@ function updateProjectInputFromFormData(formData: FormData) {
     input.description = formData.get("description");
   }
   if (formData.has("technologies")) {
-    input.technologies = formData.getAll("technologies");
+    input.technologies = formData
+      .getAll("technologies")
+      .filter((value) => value !== "");
   }
   if (formData.has("websiteUrl")) {
     input.websiteUrl = formData.get("websiteUrl");
@@ -62,22 +64,13 @@ function updateProjectInputFromFormData(formData: FormData) {
   if (formData.has("displayOrder")) {
     input.displayOrder = Number(formData.get("displayOrder"));
   }
-  if (formData.has("published")) {
-    const published = formData.get("published");
-    input.published =
-      published === "true" || published === "on"
-        ? true
-        : published === "false"
-          ? false
-          : published;
-  }
-
   return input;
 }
 
-function revalidateProjectViews() {
+function revalidateProjectViews(projectId?: string) {
   revalidatePath("/");
   revalidatePath("/manage/projects");
+  if (projectId) revalidatePath(`/manage/projects/${projectId}`);
 }
 
 /**
@@ -101,9 +94,13 @@ export async function createProjectAction(
   return { success: true };
 }
 
-/** Updates project fields, including the existing published state. */
+/**
+ * Updates editable project fields from an administrative form submission.
+ * The first argument after the project ID supports React's useActionState.
+ */
 export async function updateProjectAction(
   projectId: string,
+  _previousState: ProjectActionResult,
   formData: FormData
 ): Promise<ProjectActionResult> {
   await requireAdmin();
@@ -120,7 +117,7 @@ export async function updateProjectAction(
   }
 
   await updateProjectRecord(projectId, input.data);
-  revalidateProjectViews();
+  revalidateProjectViews(projectId);
 
   return { success: true };
 }

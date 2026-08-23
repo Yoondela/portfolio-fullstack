@@ -28,7 +28,9 @@ export default async function ManageProjectsPage() {
               key={project.id}
               className="rounded border border-zinc-200 p-4 dark:border-zinc-800"
             >
-              <h2 className="font-medium">{project.name}</h2>
+              <h2 className="font-medium">
+                <Link href={`/manage/projects/${project.id}`}>{project.name}</Link>
+              </h2>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 {project.published ? "Published" : "Draft"} · Order {project.displayOrder}
               </p>
