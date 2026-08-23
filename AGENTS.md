@@ -43,3 +43,15 @@ Review for correctness, security, architecture, authentication and server-side a
 Prioritize blockers and important issues over style. For every finding, explain why it matters and suggest a concrete fix. Do not invent requirements or recommend extra architecture unless justified by the current requirements.
 
 End reviews with findings grouped as: **Blockers**, **Should fix**, and **Optional**.
+
+## UI / Styling
+
+- Use Tailwind CSS for styling.
+- Keep the interface minimal and functional.
+- Visual direction: understated 1980s retro lifestyle aesthetic — think late-night malls, restaurants, lounges, hotel interiors, record-store photography, and soft analog editorial design.
+- Aim for a dreamy, warm, slightly nostalgic atmosphere rather than a techy, cyberpunk, arcade, or synthwave look.
+- References for mood include the relaxed visual atmosphere associated with Drifty Dreams, 53 Thieves, and Cannons — especially the late-night, intimate, polished feel rather than copying any specific artwork.
+- Prefer restrained typography, generous spacing, soft contrast, subtle borders/shadows, muted surfaces, and occasional retro accents.
+- Avoid excessive gradients, neon grids, glowing effects, pixel fonts, futuristic HUD styling, or stereotypical “80s tech” visuals.
+- Functionality and readability come before decoration.
+- During application-layer work, keep styling basic enough that the later UI/Frontend milestone can refine it without major rewrites.
