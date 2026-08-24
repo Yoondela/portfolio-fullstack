@@ -27,13 +27,37 @@
   - ✅ Edit project details.
   - ✅ Delete projects.
   - ✅ Publish/unpublish projects.
-- 3.5 Public portfolio rendering — **curent**
-  - Projects, features, screenshots
+- 3.5 Public portfolio rendering ✅
+  - ✅ Render published projects.
+  - ✅ Render project features.
+  - ✅ Add and edit project features in project forms.
+  - ✅ Add URL-based screenshots to existing features and render them publicly.
+  - ✅ Remove project features and screenshots.
 
 ## 4. UI / Frontend
 
-- Portfolio layout and project pages
-- Admin UI, responsive design, and UX polish
+- 4.1 Shared public layout — **curent**
+  - Establish site navigation, footer, typography, spacing, and responsive page container.
+  - Apply the understated warm retro visual direction.
+  - Add navigation for `/`, `/engineering`, and `/contact`.
+- 4.2 Public portfolio presentation
+  - Refine the homepage project list into a polished portfolio experience.
+  - Present technologies, links, features, and screenshots accessibly.
+  - Add responsive layouts for project content and images.
+  - Add project detail pages only if the route is added to the requirements first.
+- 4.3 Engineering and contact pages
+  - Implement the static `/engineering` notebook page.
+  - Implement the static `/contact` page.
+  - Keep the contact form deferred, as required.
+- 4.4 Admin management interface
+  - Improve the `/manage` and project-management pages’ information hierarchy.
+  - Make create, edit, publish, and delete flows clear and usable.
+  - Improve feature and screenshot form interactions.
+  - Ensure responsive and accessible admin UI.
+- 4.5 UI quality pass
+  - Verify keyboard navigation, focus states, semantic structure, contrast, and empty states.
+  - Verify layouts across small and large viewports.
+  - Remove placeholder styling and maintain visual consistency.
 
 ## 5. Testing / Hardening
 

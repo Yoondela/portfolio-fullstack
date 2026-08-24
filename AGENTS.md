@@ -44,6 +44,8 @@ Prioritize blockers and important issues over style. For every finding, explain 
 
 End reviews with findings grouped as: **Blockers**, **Should fix**, and **Optional**.
 
+Structure **Should fix** with Issue: and Do:
+
 ## UI / Styling
 
 - Use Tailwind CSS for styling.
