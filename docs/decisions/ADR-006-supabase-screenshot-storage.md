@@ -17,7 +17,7 @@ Use Supabase Storage only for portfolio screenshot files. Do not introduce Supab
 - Create one public `portfolio-screenshots` bucket.
 - Configure the bucket to accept only JPEG, PNG, and WebP files up to 5 MB.
 - Store a generated `storagePath` in PostgreSQL for each `Screenshot`; do not store a Supabase public URL.
-- Keep the Supabase secret key in server-only environment configuration.
+- Keep the Supabase URL, secret key, and bucket name in the existing `SUPABASE_URL`, `SUPABASE_SECRETE_KEY`, and `SUPABASE_STORAGE_BUCKET` environment configuration. The secret key remains server-only.
 - A Server Action must call `requireAdmin()`, validate the requested image metadata, verify the target feature, generate the storage path, and create the signed upload URL.
 - The browser uploads one selected image directly to Supabase using that short-lived signed upload URL.
 - A separate authorized Server Action creates the screenshot record only after the browser reports a successful upload.
