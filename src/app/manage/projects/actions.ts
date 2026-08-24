@@ -6,9 +6,18 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/authorization";
 import {
   createProject as createProjectRecord,
+  createProjectWithFeatures as createProjectWithFeaturesRecord,
   deleteProject as deleteProjectRecord,
   updateProject as updateProjectRecord,
+  updateProjectWithFeatures as updateProjectWithFeaturesRecord,
 } from "@/lib/projects";
+import { projectFeatureInputSchema } from "@/lib/feature-validation";
+import { deleteFeature as deleteFeatureRecord } from "@/lib/features";
+import {
+  createScreenshot as createScreenshotRecord,
+  deleteScreenshot as deleteScreenshotRecord,
+} from "@/lib/screenshots";
+import { screenshotInputSchema } from "@/lib/screenshot-validation";
 import {
   createProjectInputSchema,
   updateProjectInputSchema,
@@ -61,6 +70,36 @@ function updateProjectInputFromFormData(formData: FormData) {
   return input;
 }
 
+/** Converts the repeated feature fields emitted by the project forms. */
+function featureInputsFromFormData(formData: FormData) {
+  const ids = formData.getAll("featureIds");
+  const names = formData.getAll("featureNames");
+  const descriptions = formData.getAll("featureDescriptions");
+  const displayOrders = formData.getAll("featureDisplayOrders");
+
+  if (
+    names.length === 0 &&
+    descriptions.length === 0 &&
+    displayOrders.length === 0
+  ) {
+    return [];
+  }
+  if (
+    ids.length !== names.length ||
+    names.length !== descriptions.length ||
+    names.length !== displayOrders.length
+  ) {
+    return null;
+  }
+
+  return names.map((name, index) => ({
+    id: ids[index] === "" ? undefined : ids[index],
+    name,
+    description: descriptions[index],
+    displayOrder: Number(displayOrders[index]),
+  }));
+}
+
 function revalidateProjectViews(projectId?: string) {
   revalidatePath("/");
   revalidatePath("/manage/projects");
@@ -68,7 +107,7 @@ function revalidateProjectViews(projectId?: string) {
 }
 
 /**
- * Creates a draft project from an administrative form submission.
+ * Creates a draft project and its optional initial features from an admin form.
  * The first argument supports React's useActionState validation feedback.
  */
 export async function createProjectAction(
@@ -82,14 +121,25 @@ export async function createProjectAction(
   );
   if (!input.success) return { success: false, error: "Invalid project data." };
 
-  await createProjectRecord({ ...input.data, published: false });
+  const featureRows = featureInputsFromFormData(formData);
+  const features = projectFeatureInputSchema.array().safeParse(featureRows);
+  if (!features.success) return { success: false, error: "Invalid feature data." };
+
+  if (features.data.length > 0) {
+    await createProjectWithFeaturesRecord(
+      { ...input.data, published: false },
+      features.data
+    );
+  } else {
+    await createProjectRecord({ ...input.data, published: false });
+  }
   revalidateProjectViews();
 
   return { success: true };
 }
 
 /**
- * Updates editable project fields from an administrative form submission.
+ * Updates editable project fields and submitted feature additions or edits.
  * The first argument after the project ID supports React's useActionState.
  */
 export async function updateProjectAction(
@@ -110,10 +160,67 @@ export async function updateProjectAction(
     return { success: false, error: "Invalid project data." };
   }
 
-  await updateProjectRecord(projectId, input.data);
+  const featureRows = featureInputsFromFormData(formData);
+  const features = projectFeatureInputSchema.array().safeParse(featureRows);
+  if (!features.success) return { success: false, error: "Invalid feature data." };
+
+  if (formData.has("featureNames")) {
+    await updateProjectWithFeaturesRecord(projectId, input.data, features.data);
+  } else {
+    await updateProjectRecord(projectId, input.data);
+  }
   revalidateProjectViews(projectId);
 
   return { success: true };
+}
+
+/** Creates a screenshot record for an existing feature after admin authorization. */
+export async function createScreenshotAction(
+  featureId: string,
+  _previousState: ProjectActionResult,
+  formData: FormData
+): Promise<ProjectActionResult> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(featureId).success) {
+    return { success: false, error: "Invalid feature ID." };
+  }
+
+  const input = screenshotInputSchema.safeParse({
+    url: formData.get("url"),
+    altText: formData.get("altText"),
+    displayOrder: Number(formData.get("displayOrder")),
+  });
+  if (!input.success) return { success: false, error: "Invalid screenshot data." };
+
+  await createScreenshotRecord(featureId, input.data);
+  revalidateProjectViews();
+
+  return { success: true };
+}
+
+/** Deletes a feature and its dependent screenshots after admin authorization. */
+export async function deleteFeatureAction(featureId: string): Promise<void> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(featureId).success) {
+    throw new Error("Invalid feature ID.");
+  }
+
+  await deleteFeatureRecord(featureId);
+  revalidateProjectViews();
+}
+
+/** Deletes one screenshot after admin authorization. */
+export async function deleteScreenshotAction(screenshotId: string): Promise<void> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(screenshotId).success) {
+    throw new Error("Invalid screenshot ID.");
+  }
+
+  await deleteScreenshotRecord(screenshotId);
+  revalidateProjectViews();
 }
 
 /** Changes only the publication state from the protected management view. */

@@ -39,6 +39,7 @@ describe("EditProjectPage", () => {
       websiteUrl: null,
       githubUrl: null,
       displayOrder: 1,
+      features: [],
     };
     mockRequireAdmin.mockResolvedValue({ id: "admin-id" });
     mockGetProjectById.mockResolvedValue(project);

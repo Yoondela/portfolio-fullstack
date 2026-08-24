@@ -1,9 +1,10 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { Project } from "@/generated/prisma/client";
+import type { Feature, Project, Screenshot } from "@/generated/prisma/client";
 import { initialProjectActionState } from "../action-state";
 import { updateProjectAction } from "../actions";
+import { FeatureFields } from "../feature-fields";
 
 type EditableProject = Pick<
   Project,
@@ -14,9 +15,13 @@ type EditableProject = Pick<
   | "websiteUrl"
   | "githubUrl"
   | "displayOrder"
->;
+> & {
+  features: (Pick<Feature, "id" | "name" | "description" | "displayOrder"> & {
+    screenshots: Pick<Screenshot, "id" | "url" | "altText" | "displayOrder">[];
+  })[];
+};
 
-/** Updates editable fields, including a minimal add/remove technologies list. */
+/** Updates project details and provides minimal add/edit controls for features. */
 export function EditProjectForm({ project }: { project: EditableProject }) {
   const [state, formAction, pending] = useActionState(
     updateProjectAction.bind(null, project.id),
@@ -137,6 +142,8 @@ export function EditProjectForm({ project }: { project: EditableProject }) {
           className="mt-1 w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700"
         />
       </div>
+
+      <FeatureFields initialFeatures={project.features} />
 
       {state.success ? (
         <p role="status" className="text-sm text-green-700 dark:text-green-400">

@@ -1,0 +1,112 @@
+import { renderToStaticMarkup } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const { mockGetPublishedProjects } = vi.hoisted(() => ({
+  mockGetPublishedProjects: vi.fn(),
+}));
+
+vi.mock("@/lib/projects", () => ({
+  getPublishedProjects: mockGetPublishedProjects,
+}));
+
+import Home from "../page";
+
+describe("Home", () => {
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("reads and renders published projects", async () => {
+    mockGetPublishedProjects.mockResolvedValue([
+      {
+        id: "11111111-1111-4111-8111-111111111111",
+        name: "Published project",
+        description: "A public project.",
+        technologies: ["TypeScript"],
+        websiteUrl: "https://example.com",
+        githubUrl: "https://github.com/example/project",
+        displayOrder: 1,
+        published: true,
+        features: [
+          {
+            id: "22222222-2222-4222-8222-222222222222",
+            projectId: "11111111-1111-4111-8111-111111111111",
+            name: "First feature",
+            description: "The first public feature.",
+            displayOrder: 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            screenshots: [
+              {
+                id: "44444444-4444-4444-8444-444444444444",
+                featureId: "22222222-2222-4222-8222-222222222222",
+                url: "https://example.com/screenshot.png",
+                altText: "First feature screenshot",
+                displayOrder: 0,
+                createdAt: new Date(),
+              },
+            ],
+          },
+          {
+            id: "33333333-3333-4333-8333-333333333333",
+            projectId: "11111111-1111-4111-8111-111111111111",
+            name: "Second feature",
+            description: "The second public feature.",
+            displayOrder: 2,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            screenshots: [],
+          },
+        ],
+      },
+    ]);
+
+    const page = await Home();
+    const markup = renderToStaticMarkup(page);
+
+    expect(mockGetPublishedProjects).toHaveBeenCalledOnce();
+    expect(markup).toContain("Published project");
+    expect(markup).toContain("A public project.");
+    expect(markup).toContain("TypeScript");
+    expect(markup).toContain("First feature");
+    expect(markup).toContain("The first public feature.");
+    expect(markup).toContain('src="https://example.com/screenshot.png"');
+    expect(markup).toContain('alt="First feature screenshot"');
+    expect(markup.indexOf("First feature")).toBeLessThan(
+      markup.indexOf("Second feature")
+    );
+    expect(markup).toContain('href="https://example.com"');
+    expect(markup).toContain('href="https://github.com/example/project"');
+  });
+
+  it("shows an empty state when no projects are published", async () => {
+    mockGetPublishedProjects.mockResolvedValue([]);
+
+    const page = await Home();
+    const markup = renderToStaticMarkup(page);
+
+    expect(markup).toContain("No projects published yet.");
+  });
+
+  it("does not render unsafe stored URLs as links", async () => {
+    mockGetPublishedProjects.mockResolvedValue([
+      {
+        id: "11111111-1111-4111-8111-111111111111",
+        name: "Legacy project",
+        description: "Contains URLs saved before protocol validation.",
+        technologies: [],
+        websiteUrl: "javascript:alert(1)",
+        githubUrl: "javascript:alert(2)",
+        displayOrder: 1,
+        published: true,
+        features: [],
+      },
+    ]);
+
+    const page = await Home();
+    const markup = renderToStaticMarkup(page);
+
+    expect(markup).not.toContain("javascript:");
+    expect(markup).not.toContain("href=");
+  });
+});

@@ -34,6 +34,18 @@ Example:
 3. `docs/testing.md` — Edited — Clarified testing rules.
 4. `docs/button.tsx` — Deleted — Not used.
 
+### Next.js Server Actions
+
+- Files containing `"use server"` may only export async functions.
+- Do not export objects, constants, synchronous functions, or other runtime values from `"use server"` modules.
+- Move shared constants/helpers to separate modules when they need to be exported.
+
+### Git Discipline
+
+- Avoid working on main branch.
+- If on main and must make significant changes, create or switch to a relevant branch
+- Only a small task like align button and/or rename a function can be made on main branch
+
 # Reviewer mode
 
 When reviewing requested changes, do not modify files unless explicitly asked.
