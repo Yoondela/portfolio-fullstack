@@ -1,23 +1,30 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
+import WebSocket from "ws";
+import { getSupabaseProjectUrl } from "./supabase-project-url";
+export {
+  SCREENSHOT_UPLOAD_ALLOWED_MIME_TYPES,
+  SCREENSHOT_UPLOAD_MAX_SIZE_BYTES,
+} from "./screenshot-storage-config";
 
 /** Bucket used exclusively for publicly served portfolio screenshots. */
 export const SCREENSHOT_STORAGE_BUCKET = requiredEnvironmentVariable(
   "SUPABASE_STORAGE_BUCKET"
 );
 
-/** File constraints that the Supabase bucket and future upload actions must enforce. */
-export const SCREENSHOT_UPLOAD_ALLOWED_MIME_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-] as const;
+const supabaseUrl = getSupabaseProjectUrl(
+  requiredEnvironmentVariable("SUPABASE_URL")
+);
+const supabaseSecretKey = requiredEnvironmentVariable("SUPABASE_SECRET_KEY");
 
-export const SCREENSHOT_UPLOAD_MAX_SIZE_BYTES = 5 * 1024 * 1024;
-
-const supabaseUrl = requiredEnvironmentVariable("SUPABASE_URL");
-const supabaseSecretKey = requiredEnvironmentVariable("SUPABASE_SECRETE_KEY");
+if (!globalThis.WebSocket) {
+  Object.defineProperty(globalThis, "WebSocket", {
+    configurable: true,
+    value: WebSocket,
+    writable: true,
+  });
+}
 
 /**
  * Server-only Supabase client for privileged screenshot Storage operations.

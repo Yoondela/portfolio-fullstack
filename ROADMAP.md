@@ -34,7 +34,7 @@
   - ✅ Add URL-based screenshots to existing features and render them publicly.
   - ✅ Remove project features and screenshots.
 - 3.6 Asset storage and uploads — **curent**
-  - Provision a public Supabase Storage bucket for portfolio screenshots.
+  - ✅ Provision a public Supabase Storage bucket for portfolio screenshots.
   - Persist generated screenshot storage paths in PostgreSQL.
   - Issue signed upload URLs only after server-side administrator authorization.
   - Upload one JPEG, PNG, or WebP image at a time directly from the browser.

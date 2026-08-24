@@ -10,6 +10,16 @@ ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=your-password yarn tsx scripts/crea
 
 `DATABASE_URL` must be configured in `.env`.
 
+## provision-screenshot-storage.ts
+
+Creates or updates the public Supabase bucket used for portfolio screenshots. The script enforces the approved JPEG, PNG, and WebP MIME types and 5 MB file-size limit.
+
+```bash
+yarn tsx scripts/provision-screenshot-storage.ts
+```
+
+`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SUPABASE_STORAGE_BUCKET` must be configured in `.env`. This script is idempotent and updates the bucket configuration when it already exists.
+
 ## test-project-crud.ts
 
 Temporary integration test for the Project CRUD data-access layer.
