@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <SiteNavigation showManage={Boolean(session?.user)} />
+        <SiteNavigation isSignedIn={Boolean(session?.user)} />
         <div className="flex-1">{children}</div>
         <SiteFooter />
       </body>

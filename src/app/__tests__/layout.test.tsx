@@ -23,7 +23,7 @@ describe("RootLayout", () => {
     );
   }
 
-  it("renders shared navigation and the footer without exposing Manage to guests", async () => {
+  it("renders the shared navigation, signed-out avatar, and footer for guests", async () => {
     mockAuth.mockResolvedValue(null);
 
     const markup = await renderLayout(<p>Public content</p>);
@@ -31,17 +31,20 @@ describe("RootLayout", () => {
     expect(markup).toContain("Public content");
     expect(markup).toContain('href="/engineering"');
     expect(markup).toContain('href="/contact"');
-    expect(markup).not.toContain('href="/manage"');
+    expect(markup).toContain('aria-label="Account menu"');
+    expect(markup).toContain("Y");
+    expect(markup).not.toContain('href="/manage/projects"');
     expect(markup).toContain("Selected engineering work.");
   });
 
-  it("shows Manage while retaining the shared shell for signed-in users", async () => {
+  it("renders the signed-in avatar while retaining the shared shell", async () => {
     mockAuth.mockResolvedValue({ user: { email: "admin@example.com" } });
 
     const markup = await renderLayout(<p>Private content</p>);
 
     expect(markup).toContain("Private content");
-    expect(markup).toContain('href="/manage"');
+    expect(markup).toContain('aria-label="Account menu"');
+    expect(markup).toContain('href="/manage/projects"');
     expect(markup).toContain("Selected engineering work.");
   });
 });
