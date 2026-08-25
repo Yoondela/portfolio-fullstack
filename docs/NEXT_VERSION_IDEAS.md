@@ -6,7 +6,10 @@ These are not part of the current v1 scope. Do not implement them unless they ar
 
 ## Ideas
 
-1. Add shadcn toasts accross the app
-2. Add personal info [contacts, Name and Surname, proffessional summary, etc] to db
+- Add shadcn toasts accross the app
+- Add personal info [contacts, Name and Surname, proffessional summary, etc] to db
+- Add project detail pages only if the route is added to the requirements first.
+- HTTPS
+- Loading keleton
 
 - ...

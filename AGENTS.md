@@ -20,7 +20,11 @@ Keep roadmap uptodate with '**curent**' to show where we are and checkmark compl
 
 ## Implementation summary
 
-After making code changes, end with a numbered list of affected files.
+After making code changes, show a numbered list of affected files.
+
+Below the list end with the number of lines added minus lines deleted.
+
+e.g added 4 - deleted 3 = 1
 
 For each file, include:
 1. path
@@ -33,6 +37,8 @@ Example:
 2. `src/lib/auth/authorization.ts` — Edited — Added admin authorization check.
 3. `docs/testing.md` — Edited — Clarified testing rules.
 4. `docs/button.tsx` — Deleted — Not used.
+
+Line count: -34.
 
 ### Next.js Server Actions
 
