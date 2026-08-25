@@ -15,7 +15,7 @@ vi.mock("@/lib/supabase-storage", () => ({
   getPublicScreenshotUrl: mockGetPublicScreenshotUrl,
 }));
 
-import Home from "../page";
+import Home from "../(public)/page";
 
 describe("Home", () => {
   afterEach(() => {
@@ -80,6 +80,9 @@ describe("Home", () => {
       "projects/project-id/features/feature-id/screenshot.png"
     );
     expect(markup).toContain("Published project");
+    expect(markup).toContain("Engineering with a considered point of view.");
+    expect(markup).toContain("Project 01");
+    expect(markup).toContain("Stack");
     expect(markup).toContain("A public project.");
     expect(markup).toContain("TypeScript");
     expect(markup).toContain("First feature");
@@ -88,6 +91,7 @@ describe("Home", () => {
       'src="https://example.supabase.co/storage/v1/object/public/portfolio-screenshots/projects/project-id/features/feature-id/screenshot.png"'
     );
     expect(markup).toContain('alt="First feature screenshot"');
+    expect(markup).toContain('aria-label="First feature screenshots"');
     expect(markup.indexOf("First feature")).toBeLessThan(
       markup.indexOf("Second feature")
     );
