@@ -7,15 +7,17 @@ export default async function Home() {
   const projects = await getPublishedProjects();
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 p-6">
-      <h1 className="text-2xl font-semibold">Projects</h1>
+    <div>
+      <h1 className="font-serif text-3xl text-stone-900 dark:text-stone-100">
+        Projects
+      </h1>
 
       {projects.length === 0 ? (
-        <p className="mt-4 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-4 text-stone-600 dark:text-stone-400">
           No projects published yet.
         </p>
       ) : (
-        <ul className="mt-4 space-y-4">
+        <ul className="mt-8 space-y-4">
           {projects.map((project) => {
             const websiteUrl = getSafePublicUrl(project.websiteUrl);
             const githubUrl = getSafePublicUrl(project.githubUrl);
@@ -23,11 +25,13 @@ export default async function Home() {
             return (
               <li
                 key={project.id}
-                className="rounded border border-zinc-200 p-4 dark:border-zinc-800"
+                className="rounded border border-stone-300 bg-stone-50/70 p-5 dark:border-stone-700 dark:bg-stone-900/70 sm:p-6"
               >
                 <article>
-                  <h2 className="text-lg font-medium">{project.name}</h2>
-                  <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+                  <h2 className="text-lg font-medium text-stone-900 dark:text-stone-100">
+                    {project.name}
+                  </h2>
+                  <p className="mt-2 text-stone-700 dark:text-stone-300">
                     {project.description}
                   </p>
 
@@ -39,7 +43,7 @@ export default async function Home() {
                       {project.technologies.map((technology, index) => (
                         <li
                           key={`${technology}-${index}`}
-                          className="rounded bg-zinc-100 px-2 py-1 text-sm dark:bg-zinc-800"
+                          className="rounded border border-stone-300 bg-stone-100 px-2 py-1 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
                         >
                           {technology}
                         </li>
@@ -49,12 +53,16 @@ export default async function Home() {
 
                   {project.features.length > 0 && (
                     <section className="mt-4">
-                      <h3 className="font-medium">Features</h3>
+                      <h3 className="font-medium text-stone-900 dark:text-stone-100">
+                        Features
+                      </h3>
                       <ul className="mt-2 space-y-2">
                         {project.features.map((feature) => (
                           <li key={feature.id}>
-                            <h4 className="text-sm font-medium">{feature.name}</h4>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            <h4 className="text-sm font-medium text-stone-900 dark:text-stone-100">
+                              {feature.name}
+                            </h4>
+                            <p className="text-sm text-stone-700 dark:text-stone-300">
                               {feature.description}
                             </p>
                             {feature.screenshots.length > 0 && (
@@ -76,7 +84,7 @@ export default async function Home() {
                                       <img
                                         src={url}
                                         alt={screenshot.altText}
-                                        className="max-h-64 rounded border border-zinc-200 dark:border-zinc-800"
+                                        className="max-h-64 rounded border border-stone-300 dark:border-stone-700"
                                       />
                                     </li>
                                   ) : null;
@@ -94,7 +102,7 @@ export default async function Home() {
                       {websiteUrl && (
                         <a
                           href={websiteUrl}
-                          className="underline underline-offset-4"
+                          className="underline decoration-stone-400 underline-offset-4 hover:text-stone-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800 dark:decoration-stone-500 dark:hover:text-stone-50"
                         >
                           Website
                         </a>
@@ -102,7 +110,7 @@ export default async function Home() {
                       {githubUrl && (
                         <a
                           href={githubUrl}
-                          className="underline underline-offset-4"
+                          className="underline decoration-stone-400 underline-offset-4 hover:text-stone-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800 dark:decoration-stone-500 dark:hover:text-stone-50"
                         >
                           GitHub
                         </a>
@@ -115,6 +123,6 @@ export default async function Home() {
           })}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

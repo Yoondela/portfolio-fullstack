@@ -15,7 +15,7 @@ vi.mock("@/lib/supabase-storage", () => ({
   getPublicScreenshotUrl: mockGetPublicScreenshotUrl,
 }));
 
-import Home from "../page";
+import Home from "../(public)/page";
 
 describe("Home", () => {
   afterEach(() => {

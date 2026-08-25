@@ -44,11 +44,11 @@
 
 ## 4. UI / Frontend — **curent**
 
-- 4.1 Shared public layout
-  - Establish site navigation, footer, typography, spacing, and responsive page container.
-  - Apply the understated warm retro visual direction.
-  - Add navigation for `/`, `/engineering`, and `/contact`.
-- 4.2 Public portfolio presentation
+- 4.1 Shared public layout ✅
+  - ✅ Establish site navigation, footer, typography, spacing, and responsive page container.
+  - ✅ Apply the understated warm retro visual direction.
+  - ✅ Add navigation for `/`, `/engineering`, and `/contact`.
+- 4.2 Public portfolio presentation — **curent**
   - Refine the homepage project list into a polished portfolio experience.
   - Present technologies, links, features, and screenshots accessibly.
   - Add responsive layouts for project content and images.
