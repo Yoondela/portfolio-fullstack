@@ -56,7 +56,11 @@ Prioritize blockers and important issues over style. For every finding, explain 
 
 End reviews with findings grouped as: **Blockers**, **Should fix**, and **Optional**.
 
+Structure **Blockers** with Issue: and Proposed fix:
+
 Structure **Should fix** with Issue: and Do:
+
+Structure **Optional** with Issue: and Why optional:
 
 ## UI / Styling
 
