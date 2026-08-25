@@ -17,7 +17,10 @@ type EditableProject = Pick<
   | "displayOrder"
 > & {
   features: (Pick<Feature, "id" | "name" | "description" | "displayOrder"> & {
-    screenshots: Pick<Screenshot, "id" | "url" | "altText" | "displayOrder">[];
+    screenshots: Pick<
+      Screenshot,
+      "id" | "storagePath" | "altText" | "displayOrder"
+    >[];
   })[];
 };
 

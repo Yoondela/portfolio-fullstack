@@ -8,7 +8,12 @@ import { ScreenshotForm } from "./screenshot-form";
 type EditableFeature = Pick<
   Feature,
   "id" | "name" | "description" | "displayOrder"
-> & { screenshots: Pick<Screenshot, "id" | "url" | "altText" | "displayOrder">[] };
+> & {
+  screenshots: Pick<
+    Screenshot,
+    "id" | "storagePath" | "altText" | "displayOrder"
+  >[];
+};
 
 type FeatureDraft = Omit<EditableFeature, "id"> & { id?: string };
 

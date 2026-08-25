@@ -146,9 +146,9 @@ Project-management mutations use Server Actions because they serve administrativ
 
 ## 11. Image architecture
 
-Screenshots require persistent storage, but the final storage implementation is intentionally deferred.
+Supabase Storage is the selected provider for screenshot files. PostgreSQL persists generated screenshot object paths rather than provider URLs. A temporary nullable legacy URL is retained only for screenshots created before the Storage migration, so they remain renderable until migrated or removed.
 
-The solution should avoid unnecessary infrastructure for v1.
+The signed-upload action uses a Supabase secret key only after server-side administrator authorization. Browsers will upload files directly to Storage; they will never receive the secret key. Bucket configuration and application validation limit uploads to JPEG, PNG, and WebP files up to 5 MB. See ADR-006 for the full storage and deletion lifecycle decision.
 
 ## 12. Deployment architecture
 

@@ -1,12 +1,18 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { mockGetPublishedProjects } = vi.hoisted(() => ({
-  mockGetPublishedProjects: vi.fn(),
-}));
+const { mockGetPublishedProjects, mockGetPublicScreenshotUrl } = vi.hoisted(
+  () => ({
+    mockGetPublishedProjects: vi.fn(),
+    mockGetPublicScreenshotUrl: vi.fn(),
+  })
+);
 
 vi.mock("@/lib/projects", () => ({
   getPublishedProjects: mockGetPublishedProjects,
+}));
+vi.mock("@/lib/supabase-storage", () => ({
+  getPublicScreenshotUrl: mockGetPublicScreenshotUrl,
 }));
 
 import Home from "../page";
@@ -40,7 +46,9 @@ describe("Home", () => {
               {
                 id: "44444444-4444-4444-8444-444444444444",
                 featureId: "22222222-2222-4222-8222-222222222222",
-                url: "https://example.com/screenshot.png",
+                storagePath:
+                  "projects/project-id/features/feature-id/screenshot.png",
+                legacyUrl: null,
                 altText: "First feature screenshot",
                 displayOrder: 0,
                 createdAt: new Date(),
@@ -60,17 +68,25 @@ describe("Home", () => {
         ],
       },
     ]);
+    mockGetPublicScreenshotUrl.mockReturnValue(
+      "https://example.supabase.co/storage/v1/object/public/portfolio-screenshots/projects/project-id/features/feature-id/screenshot.png"
+    );
 
     const page = await Home();
     const markup = renderToStaticMarkup(page);
 
     expect(mockGetPublishedProjects).toHaveBeenCalledOnce();
+    expect(mockGetPublicScreenshotUrl).toHaveBeenCalledWith(
+      "projects/project-id/features/feature-id/screenshot.png"
+    );
     expect(markup).toContain("Published project");
     expect(markup).toContain("A public project.");
     expect(markup).toContain("TypeScript");
     expect(markup).toContain("First feature");
     expect(markup).toContain("The first public feature.");
-    expect(markup).toContain('src="https://example.com/screenshot.png"');
+    expect(markup).toContain(
+      'src="https://example.supabase.co/storage/v1/object/public/portfolio-screenshots/projects/project-id/features/feature-id/screenshot.png"'
+    );
     expect(markup).toContain('alt="First feature screenshot"');
     expect(markup.indexOf("First feature")).toBeLessThan(
       markup.indexOf("Second feature")

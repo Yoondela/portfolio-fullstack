@@ -13,6 +13,7 @@ import {
   type FeatureInput,
   type ProjectFeatureInput,
 } from "./feature-validation";
+import { deleteScreenshotStorageObjects } from "./supabase-storage";
 import type { Feature, Project, Screenshot } from "@/generated/prisma/client";
 
 type FeatureWithScreenshots = Feature & { screenshots: Screenshot[] };
@@ -193,6 +194,30 @@ export async function updateProjectWithFeatures(
 }
 
 export async function deleteProject(id: string): Promise<void> {
+  const project = await prisma.project.findUnique({
+    where: { id },
+    select: {
+      features: {
+        select: {
+          screenshots: {
+            select: { storagePath: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!project) {
+    throw new Error("Project not found.");
+  }
+
+  await deleteScreenshotStorageObjects(
+    project.features.flatMap((feature) =>
+      feature.screenshots.flatMap((screenshot) =>
+        screenshot.storagePath ? [screenshot.storagePath] : []
+      )
+    )
+  );
   await prisma.project.delete({
     where: { id },
   });

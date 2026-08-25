@@ -10,6 +10,8 @@ const {
   mockRequireAdmin,
   mockRevalidatePath,
   mockCreateScreenshot,
+  mockCreateScreenshotUploadUrl,
+  mockDeletePendingScreenshotUpload,
   mockUpdateProject,
   mockUpdateProjectWithFeatures,
 } = vi.hoisted(() => ({
@@ -22,6 +24,8 @@ const {
   mockRequireAdmin: vi.fn(),
   mockRevalidatePath: vi.fn(),
   mockCreateScreenshot: vi.fn(),
+  mockCreateScreenshotUploadUrl: vi.fn(),
+  mockDeletePendingScreenshotUpload: vi.fn(),
   mockUpdateProject: vi.fn(),
   mockUpdateProjectWithFeatures: vi.fn(),
 }));
@@ -41,10 +45,16 @@ vi.mock("@/lib/screenshots", () => ({
   createScreenshot: mockCreateScreenshot,
   deleteScreenshot: mockDeleteScreenshot,
 }));
+vi.mock("@/lib/screenshot-uploads", () => ({
+  createScreenshotUploadUrl: mockCreateScreenshotUploadUrl,
+  deletePendingScreenshotUpload: mockDeletePendingScreenshotUpload,
+}));
 
 import {
   createProjectAction,
   createScreenshotAction,
+  createScreenshotUploadUrlAction,
+  deletePendingScreenshotUploadAction,
   deleteFeatureAction,
   deleteProjectAction,
   deleteScreenshotAction,
@@ -52,6 +62,7 @@ import {
   updateProjectAction,
 } from "../actions";
 import { initialProjectActionState } from "../action-state";
+import { ScreenshotStorageVerificationError } from "@/lib/screenshot-storage-errors";
 
 const projectId = "11111111-1111-4111-8111-111111111111";
 
@@ -233,7 +244,10 @@ describe("project Server Actions", () => {
 
   it("creates a screenshot after admin authorization", async () => {
     const formData = new FormData();
-    formData.set("url", "https://example.com/screenshot.png");
+    formData.set(
+      "storagePath",
+      "projects/project-id/features/feature-id/screenshot.png"
+    );
     formData.set("altText", "Project screenshot");
     formData.set("displayOrder", "0");
 
@@ -242,10 +256,62 @@ describe("project Server Actions", () => {
     ).resolves.toEqual({ success: true });
 
     expect(mockCreateScreenshot).toHaveBeenCalledWith(projectId, {
-      url: "https://example.com/screenshot.png",
+      storagePath: "projects/project-id/features/feature-id/screenshot.png",
       altText: "Project screenshot",
       displayOrder: 0,
     });
+  });
+
+  it("issues an upload capability after admin authorization and metadata validation", async () => {
+    mockCreateScreenshotUploadUrl.mockResolvedValue({
+      storagePath: "projects/project-id/features/feature-id/screenshot.webp",
+      signedUrl: "https://example.supabase.co/upload/signed-url",
+      token: "upload-token",
+    });
+
+    await expect(
+      createScreenshotUploadUrlAction(projectId, {
+        contentType: "image/webp",
+        size: 1024,
+      })
+    ).resolves.toEqual({
+      success: true,
+      storagePath: "projects/project-id/features/feature-id/screenshot.webp",
+      signedUrl: "https://example.supabase.co/upload/signed-url",
+      token: "upload-token",
+    });
+
+    expect(mockCreateScreenshotUploadUrl).toHaveBeenCalledWith(projectId, {
+      contentType: "image/webp",
+      size: 1024,
+    });
+  });
+
+  it("rejects invalid upload metadata before creating an upload capability", async () => {
+    await expect(
+      createScreenshotUploadUrlAction(projectId, {
+        contentType: "image/gif",
+        size: 1024,
+      })
+    ).resolves.toEqual({
+      success: false,
+      error: "Invalid screenshot upload data.",
+    });
+
+    expect(mockCreateScreenshotUploadUrl).not.toHaveBeenCalled();
+  });
+
+  it("removes a failed screenshot upload after admin authorization", async () => {
+    const storagePath = "projects/project-id/features/feature-id/screenshot.webp";
+
+    await expect(
+      deletePendingScreenshotUploadAction(projectId, storagePath)
+    ).resolves.toEqual({ success: true });
+
+    expect(mockDeletePendingScreenshotUpload).toHaveBeenCalledWith(
+      projectId,
+      storagePath
+    );
   });
 
   it("rejects unauthorized users before creating a screenshot", async () => {
@@ -258,9 +324,44 @@ describe("project Server Actions", () => {
     expect(mockCreateScreenshot).not.toHaveBeenCalled();
   });
 
+  it("returns an error when the screenshot storage object cannot be verified", async () => {
+    const formData = new FormData();
+    formData.set(
+      "storagePath",
+      "projects/project-id/features/feature-id/screenshot.png"
+    );
+    formData.set("altText", "Project screenshot");
+    formData.set("displayOrder", "0");
+    mockCreateScreenshot.mockRejectedValue(
+      new ScreenshotStorageVerificationError("Storage unavailable")
+    );
+
+    await expect(
+      createScreenshotAction(projectId, initialProjectActionState, formData)
+    ).resolves.toEqual({
+      success: false,
+      error: "Screenshot storage object could not be verified.",
+    });
+  });
+
+  it("propagates unexpected screenshot creation failures", async () => {
+    const formData = new FormData();
+    formData.set(
+      "storagePath",
+      "projects/project-id/features/feature-id/screenshot.png"
+    );
+    formData.set("altText", "Project screenshot");
+    formData.set("displayOrder", "0");
+    mockCreateScreenshot.mockRejectedValue(new Error("Database unavailable"));
+
+    await expect(
+      createScreenshotAction(projectId, initialProjectActionState, formData)
+    ).rejects.toThrow("Database unavailable");
+  });
+
   it("rejects invalid screenshot input before writing", async () => {
     const formData = new FormData();
-    formData.set("url", "javascript:alert(1)");
+    formData.set("storagePath", "../screenshot.webp");
     formData.set("altText", "Unsafe screenshot");
     formData.set("displayOrder", "0");
 

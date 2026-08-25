@@ -18,6 +18,12 @@ import {
   deleteScreenshot as deleteScreenshotRecord,
 } from "@/lib/screenshots";
 import { screenshotInputSchema } from "@/lib/screenshot-validation";
+import { ScreenshotStorageVerificationError } from "@/lib/screenshot-storage-errors";
+import {
+  createScreenshotUploadUrl,
+  deletePendingScreenshotUpload,
+} from "@/lib/screenshot-uploads";
+import { screenshotUploadMetadataSchema } from "@/lib/screenshot-validation";
 import {
   createProjectInputSchema,
   updateProjectInputSchema,
@@ -187,14 +193,71 @@ export async function createScreenshotAction(
   }
 
   const input = screenshotInputSchema.safeParse({
-    url: formData.get("url"),
+    storagePath: formData.get("storagePath"),
     altText: formData.get("altText"),
     displayOrder: Number(formData.get("displayOrder")),
   });
   if (!input.success) return { success: false, error: "Invalid screenshot data." };
 
-  await createScreenshotRecord(featureId, input.data);
+  try {
+    await createScreenshotRecord(featureId, input.data);
+  } catch (error) {
+    if (error instanceof ScreenshotStorageVerificationError) {
+      return {
+        success: false,
+        error: "Screenshot storage object could not be verified.",
+      };
+    }
+
+    throw error;
+  }
   revalidateProjectViews();
+
+  return { success: true };
+}
+
+/** Issues an administrator-authorized, short-lived upload capability for one image. */
+export async function createScreenshotUploadUrlAction(
+  featureId: string,
+  metadata: unknown
+): Promise<
+  | { success: true; storagePath: string; signedUrl: string; token: string }
+  | { success: false; error: string }
+> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(featureId).success) {
+    return { success: false, error: "Invalid feature ID." };
+  }
+
+  const input = screenshotUploadMetadataSchema.safeParse(metadata);
+  if (!input.success) {
+    return { success: false, error: "Invalid screenshot upload data." };
+  }
+
+  const upload = await createScreenshotUploadUrl(featureId, input.data);
+  return { success: true, ...upload };
+}
+
+/** Removes an uploaded object that could not be finalized as a screenshot record. */
+export async function deletePendingScreenshotUploadAction(
+  featureId: string,
+  storagePath: string
+): Promise<ProjectActionResult> {
+  await requireAdmin();
+
+  if (!projectIdSchema.safeParse(featureId).success) {
+    return { success: false, error: "Invalid feature ID." };
+  }
+
+  try {
+    await deletePendingScreenshotUpload(featureId, storagePath);
+  } catch {
+    return {
+      success: false,
+      error: "Uploaded screenshot could not be removed.",
+    };
+  }
 
   return { success: true };
 }

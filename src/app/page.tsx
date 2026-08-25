@@ -1,5 +1,6 @@
 import { getPublishedProjects } from "@/lib/projects";
 import { getSafePublicUrl } from "@/lib/public-url";
+import { getPublicScreenshotUrl } from "@/lib/supabase-storage";
 
 /** Renders the published portfolio projects in their configured display order. */
 export default async function Home() {
@@ -59,10 +60,17 @@ export default async function Home() {
                             {feature.screenshots.length > 0 && (
                               <ul className="mt-2 space-y-1">
                                 {feature.screenshots.map((screenshot) => {
-                                  const url = getSafePublicUrl(screenshot.url);
+                                  const url = screenshot.storagePath
+                                    ? getPublicScreenshotUrl(
+                                        screenshot.storagePath
+                                      )
+                                    : screenshot.legacyUrl
+                                      ? getSafePublicUrl(screenshot.legacyUrl)
+                                      : null;
+
                                   return url ? (
                                     <li key={screenshot.id}>
-                                      {/* Screenshot hosts are administrator-configured URLs, so
+                                      {/* The Storage bucket is administrator-configured, so
                                        * next/image remote patterns cannot be fixed at build time. */}
                                       {/* eslint-disable-next-line @next/next/no-img-element */}
                                       <img
