@@ -4,17 +4,17 @@ import { useState, useTransition } from "react";
 import { initialProjectActionState } from "./action-state";
 import { createScreenshotAction } from "./actions";
 
-/** Collects a URL-based screenshot without nesting another form in the editor. */
+/** Collects an existing screenshot object path without nesting another form in the editor. */
 export function ScreenshotForm({ featureId }: { featureId: string }) {
   const [state, setState] = useState(initialProjectActionState);
-  const [url, setUrl] = useState("");
+  const [storagePath, setStoragePath] = useState("");
   const [altText, setAltText] = useState("");
   const [displayOrder, setDisplayOrder] = useState("0");
   const [pending, startTransition] = useTransition();
 
   function addScreenshot() {
     const formData = new FormData();
-    formData.set("url", url);
+    formData.set("storagePath", storagePath);
     formData.set("altText", altText);
     formData.set("displayOrder", displayOrder);
 
@@ -26,7 +26,7 @@ export function ScreenshotForm({ featureId }: { featureId: string }) {
       );
       setState(result);
       if (result.success) {
-        setUrl("");
+        setStoragePath("");
         setAltText("");
         setDisplayOrder("0");
       }
@@ -37,11 +37,10 @@ export function ScreenshotForm({ featureId }: { featureId: string }) {
     <div className="mt-3 space-y-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
       <p className="text-sm font-medium">Add screenshot</p>
       <input
-        type="url"
-        value={url}
-        onChange={(event) => setUrl(event.target.value)}
-        placeholder="Screenshot URL"
-        aria-label="Screenshot URL"
+        value={storagePath}
+        onChange={(event) => setStoragePath(event.target.value)}
+        placeholder="projects/{projectId}/features/{featureId}/image.webp"
+        aria-label="Screenshot storage path"
         className="w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700"
       />
       <input

@@ -17,10 +17,12 @@ Use Supabase Storage only for portfolio screenshot files. Do not introduce Supab
 - Create one public `portfolio-screenshots` bucket.
 - Configure the bucket to accept only JPEG, PNG, and WebP files up to 5 MB.
 - Store a generated `storagePath` in PostgreSQL for each `Screenshot`; do not store a Supabase public URL.
+- Preserve pre-existing external URLs temporarily in nullable `legacyUrl` rows during the migration. They remain publicly renderable but are not Storage-managed; migrate or remove them before removing this compatibility field.
 - Keep the Supabase URL, secret key, and bucket name in the existing `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SUPABASE_STORAGE_BUCKET` environment configuration. The secret key remains server-only.
 - A Server Action must call `requireAdmin()`, validate the requested image metadata, verify the target feature, generate the storage path, and create the signed upload URL.
 - The browser uploads one selected image directly to Supabase using that short-lived signed upload URL.
 - A separate authorized Server Action creates the screenshot record only after the browser reports a successful upload.
+- Until the browser upload flow is implemented, an administrator may register an existing object only after the server verifies the object exists and its path belongs to the target feature.
 - Public rendering derives the public URL from the bucket and stored path.
 
 Object paths should be generated under the project and feature that own them, for example:
@@ -58,7 +60,7 @@ This would keep the browser away from the storage API but sends image bytes thro
 ## Consequences
 
 - Screenshot uploads require a small client component for file selection and upload state; database access and privileged Storage operations remain server-side.
-- The Prisma schema and migration must replace `Screenshot.url` with `Screenshot.storagePath`. Existing data must be assessed before migration; externally hosted URLs cannot be blindly treated as Storage paths.
+- The Prisma schema and migration replace `Screenshot.url` with `Screenshot.storagePath`. Existing external URLs are moved to a temporary `legacyUrl` field rather than treated as Storage paths; each must be migrated or removed before that field is retired.
 - Project and feature cascade deletes alone are no longer sufficient. Application-level deletion operations must retrieve child storage paths before deleting database records.
 - A public bucket means anyone with an object URL can retrieve the image. Draft screenshots must therefore contain no confidential information.
 - Tests should mock the Storage client and cover authorization, validation, upload finalization, cleanup failures, and deletion ordering.

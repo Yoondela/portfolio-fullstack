@@ -3,6 +3,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import WebSocket from "ws";
 import { getSupabaseProjectUrl } from "./supabase-project-url";
+import { ScreenshotStorageVerificationError } from "./screenshot-storage-errors";
 export {
   SCREENSHOT_UPLOAD_ALLOWED_MIME_TYPES,
   SCREENSHOT_UPLOAD_MAX_SIZE_BYTES,
@@ -36,6 +37,44 @@ export const supabaseStorage = createClient(supabaseUrl, supabaseSecretKey, {
     persistSession: false,
   },
 });
+
+/** Returns the public URL for a screenshot object stored in the configured bucket. */
+export function getPublicScreenshotUrl(storagePath: string): string {
+  return supabaseStorage.storage
+    .from(SCREENSHOT_STORAGE_BUCKET)
+    .getPublicUrl(storagePath).data.publicUrl;
+}
+
+/** Verifies that an existing screenshot object can be found in the configured bucket. */
+export async function assertScreenshotStorageObject(
+  storagePath: string
+): Promise<void> {
+  const { data: exists, error } = await supabaseStorage.storage
+    .from(SCREENSHOT_STORAGE_BUCKET)
+    .exists(storagePath);
+
+  if (error || !exists) {
+    throw new ScreenshotStorageVerificationError(
+      "Screenshot storage object does not exist."
+    );
+  }
+}
+
+/** Removes screenshot objects before their database records are deleted. */
+export async function deleteScreenshotStorageObjects(
+  storagePaths: string[]
+): Promise<void> {
+  const uniqueStoragePaths = [...new Set(storagePaths)];
+  if (uniqueStoragePaths.length === 0) return;
+
+  const { error } = await supabaseStorage.storage
+    .from(SCREENSHOT_STORAGE_BUCKET)
+    .remove(uniqueStoragePaths);
+
+  if (error) {
+    throw new Error("Screenshot storage cleanup failed.");
+  }
+}
 
 function requiredEnvironmentVariable(name: string): string {
   const value = process.env[name];

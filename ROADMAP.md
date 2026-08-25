@@ -35,11 +35,11 @@
   - ✅ Remove project features and screenshots.
 - 3.6 Asset storage and uploads — **curent**
   - ✅ Provision a public Supabase Storage bucket for portfolio screenshots.
-  - Persist generated screenshot storage paths in PostgreSQL.
+  - ✅ Persist generated screenshot storage paths in PostgreSQL.
   - Issue signed upload URLs only after server-side administrator authorization.
   - Upload one JPEG, PNG, or WebP image at a time directly from the browser.
   - Enforce a 5 MB upload limit and create screenshot records only after upload succeeds.
-  - Delete Storage objects before deleting their screenshot, feature, or project database records.
+  - ✅ Delete Storage objects before deleting their screenshot, feature, or project database records.
   - Add validation, failure handling, and tests for the upload lifecycle.
 
 ## 4. UI / Frontend

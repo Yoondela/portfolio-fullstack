@@ -51,7 +51,8 @@ model Feature {
 model Screenshot {
   id           String   @id @default(uuid()) @db.Uuid
   featureId    String   @db.Uuid
-  url          String
+  storagePath  String?  @unique
+  legacyUrl    String?
   altText      String
   displayOrder Int
   createdAt    DateTime @default(now())

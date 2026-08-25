@@ -1,20 +1,25 @@
 import { z } from "zod";
 
-/** Validates URL-based screenshots while persistent file storage remains deferred. */
+/** Validates database references to screenshot objects in Supabase Storage. */
 export const screenshotInputSchema = z.object({
-  url: z
+  storagePath: z
     .string()
-    .url()
-      .refine(
+    .trim()
+    .min(1, "Screenshot storage path is required")
+    .max(1024)
+    .refine(
       (value) => {
-        try {
-          const protocol = new URL(value).protocol;
-          return protocol === "http:" || protocol === "https:";
-        } catch {
-          return false;
-        }
+        const segments = value.split("/");
+
+        return (
+          !value.startsWith("/") &&
+          segments.every(
+            (segment) =>
+              segment.length > 0 && segment !== "." && segment !== ".."
+          )
+        );
       },
-      "Screenshot URL must use http or https"
+      "Screenshot storage path must be a relative object path"
     ),
   altText: z.string().min(1, "Screenshot alt text is required").max(255),
   displayOrder: z.number().int().nonnegative(),

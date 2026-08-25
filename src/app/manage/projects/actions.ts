@@ -18,6 +18,7 @@ import {
   deleteScreenshot as deleteScreenshotRecord,
 } from "@/lib/screenshots";
 import { screenshotInputSchema } from "@/lib/screenshot-validation";
+import { ScreenshotStorageVerificationError } from "@/lib/screenshot-storage-errors";
 import {
   createProjectInputSchema,
   updateProjectInputSchema,
@@ -187,13 +188,24 @@ export async function createScreenshotAction(
   }
 
   const input = screenshotInputSchema.safeParse({
-    url: formData.get("url"),
+    storagePath: formData.get("storagePath"),
     altText: formData.get("altText"),
     displayOrder: Number(formData.get("displayOrder")),
   });
   if (!input.success) return { success: false, error: "Invalid screenshot data." };
 
-  await createScreenshotRecord(featureId, input.data);
+  try {
+    await createScreenshotRecord(featureId, input.data);
+  } catch (error) {
+    if (error instanceof ScreenshotStorageVerificationError) {
+      return {
+        success: false,
+        error: "Screenshot storage object could not be verified.",
+      };
+    }
+
+    throw error;
+  }
   revalidateProjectViews();
 
   return { success: true };
