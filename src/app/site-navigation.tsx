@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-/** Primary navigation shared by public portfolio pages. */
-export function SiteNavigation() {
+/** Primary navigation shared across public and protected application pages. */
+export function SiteNavigation({ showManage }: { showManage: boolean }) {
   return (
     <header className="border-b border-stone-300/80 bg-stone-50/75 dark:border-stone-700 dark:bg-stone-950/75">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-8">
@@ -37,6 +37,16 @@ export function SiteNavigation() {
                 Contact
               </Link>
             </li>
+            {showManage && (
+              <li>
+                <Link
+                  href="/manage"
+                  className="underline-offset-4 hover:text-stone-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800 dark:hover:text-stone-50"
+                >
+                  Manage
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
       </div>
@@ -44,7 +54,7 @@ export function SiteNavigation() {
   );
 }
 
-/** Footer shared by public portfolio pages. */
+/** Footer shared across public and protected application pages. */
 export function SiteFooter() {
   return (
     <footer className="border-t border-stone-300/80 px-5 py-6 text-sm text-stone-600 dark:border-stone-700 dark:text-stone-400 sm:px-8">
