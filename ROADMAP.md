@@ -33,16 +33,16 @@
   - ✅ Add and edit project features in project forms.
   - ✅ Add URL-based screenshots to existing features and render them publicly.
   - ✅ Remove project features and screenshots.
-- 3.6 Asset storage and uploads — **curent**
+- 3.6 Asset storage and uploads ✅
   - ✅ Provision a public Supabase Storage bucket for portfolio screenshots.
   - ✅ Persist generated screenshot storage paths in PostgreSQL.
-  - Issue signed upload URLs only after server-side administrator authorization.
-  - Upload one JPEG, PNG, or WebP image at a time directly from the browser.
-  - Enforce a 5 MB upload limit and create screenshot records only after upload succeeds.
+  - ✅ Issue signed upload URLs only after server-side administrator authorization.
+  - ✅ Upload one JPEG, PNG, or WebP image at a time directly from the browser.
+  - ✅ Enforce a 5 MB upload limit and create screenshot records only after upload succeeds.
   - ✅ Delete Storage objects before deleting their screenshot, feature, or project database records.
-  - Add validation, failure handling, and tests for the upload lifecycle.
+  - ✅ Add validation, failure handling, and tests for the upload lifecycle.
 
-## 4. UI / Frontend
+## 4. UI / Frontend — **curent**
 
 - 4.1 Shared public layout
   - Establish site navigation, footer, typography, spacing, and responsive page container.

@@ -10,6 +10,8 @@ const {
   mockRequireAdmin,
   mockRevalidatePath,
   mockCreateScreenshot,
+  mockCreateScreenshotUploadUrl,
+  mockDeletePendingScreenshotUpload,
   mockUpdateProject,
   mockUpdateProjectWithFeatures,
 } = vi.hoisted(() => ({
@@ -22,6 +24,8 @@ const {
   mockRequireAdmin: vi.fn(),
   mockRevalidatePath: vi.fn(),
   mockCreateScreenshot: vi.fn(),
+  mockCreateScreenshotUploadUrl: vi.fn(),
+  mockDeletePendingScreenshotUpload: vi.fn(),
   mockUpdateProject: vi.fn(),
   mockUpdateProjectWithFeatures: vi.fn(),
 }));
@@ -41,10 +45,16 @@ vi.mock("@/lib/screenshots", () => ({
   createScreenshot: mockCreateScreenshot,
   deleteScreenshot: mockDeleteScreenshot,
 }));
+vi.mock("@/lib/screenshot-uploads", () => ({
+  createScreenshotUploadUrl: mockCreateScreenshotUploadUrl,
+  deletePendingScreenshotUpload: mockDeletePendingScreenshotUpload,
+}));
 
 import {
   createProjectAction,
   createScreenshotAction,
+  createScreenshotUploadUrlAction,
+  deletePendingScreenshotUploadAction,
   deleteFeatureAction,
   deleteProjectAction,
   deleteScreenshotAction,
@@ -250,6 +260,58 @@ describe("project Server Actions", () => {
       altText: "Project screenshot",
       displayOrder: 0,
     });
+  });
+
+  it("issues an upload capability after admin authorization and metadata validation", async () => {
+    mockCreateScreenshotUploadUrl.mockResolvedValue({
+      storagePath: "projects/project-id/features/feature-id/screenshot.webp",
+      signedUrl: "https://example.supabase.co/upload/signed-url",
+      token: "upload-token",
+    });
+
+    await expect(
+      createScreenshotUploadUrlAction(projectId, {
+        contentType: "image/webp",
+        size: 1024,
+      })
+    ).resolves.toEqual({
+      success: true,
+      storagePath: "projects/project-id/features/feature-id/screenshot.webp",
+      signedUrl: "https://example.supabase.co/upload/signed-url",
+      token: "upload-token",
+    });
+
+    expect(mockCreateScreenshotUploadUrl).toHaveBeenCalledWith(projectId, {
+      contentType: "image/webp",
+      size: 1024,
+    });
+  });
+
+  it("rejects invalid upload metadata before creating an upload capability", async () => {
+    await expect(
+      createScreenshotUploadUrlAction(projectId, {
+        contentType: "image/gif",
+        size: 1024,
+      })
+    ).resolves.toEqual({
+      success: false,
+      error: "Invalid screenshot upload data.",
+    });
+
+    expect(mockCreateScreenshotUploadUrl).not.toHaveBeenCalled();
+  });
+
+  it("removes a failed screenshot upload after admin authorization", async () => {
+    const storagePath = "projects/project-id/features/feature-id/screenshot.webp";
+
+    await expect(
+      deletePendingScreenshotUploadAction(projectId, storagePath)
+    ).resolves.toEqual({ success: true });
+
+    expect(mockDeletePendingScreenshotUpload).toHaveBeenCalledWith(
+      projectId,
+      storagePath
+    );
   });
 
   it("rejects unauthorized users before creating a screenshot", async () => {

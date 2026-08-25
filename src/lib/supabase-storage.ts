@@ -45,6 +45,21 @@ export function getPublicScreenshotUrl(storagePath: string): string {
     .getPublicUrl(storagePath).data.publicUrl;
 }
 
+/** Creates a short-lived browser upload capability for an exact object path. */
+export async function createSignedScreenshotUploadUrl(
+  storagePath: string
+): Promise<{ signedUrl: string; token: string }> {
+  const { data, error } = await supabaseStorage.storage
+    .from(SCREENSHOT_STORAGE_BUCKET)
+    .createSignedUploadUrl(storagePath);
+
+  if (error || !data) {
+    throw new Error("Screenshot upload URL could not be created.");
+  }
+
+  return { signedUrl: data.signedUrl, token: data.token };
+}
+
 /** Verifies that an existing screenshot object can be found in the configured bucket. */
 export async function assertScreenshotStorageObject(
   storagePath: string
