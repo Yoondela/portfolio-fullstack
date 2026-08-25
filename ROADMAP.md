@@ -55,8 +55,8 @@
   - Add project detail pages only if the route is added to the requirements first.
 - 4.3 Engineering and contact pages — **curent**
   - Implement the static `/engineering` notebook page.
-  - Implement the static `/contact` page.
-  - Keep the contact form deferred, as required.
+  - ✅ Implement the static `/contact` page.
+  - ✅ Implement the subject-and-message Formspree contact form.
 - 4.4 Admin management interface
   - Improve the `/manage` and project-management pages’ information hierarchy.
   - Make create, edit, publish, and delete flows clear and usable.
