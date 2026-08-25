@@ -54,7 +54,7 @@
   - ✅ Add responsive layouts for project content and images.
   - Add project detail pages only if the route is added to the requirements first.
 - 4.3 Engineering and contact pages — **curent**
-  - Implement the static `/engineering` notebook page.
+  - ✅ Implement the static `/engineering` notebook page.
   - ✅ Implement the static `/contact` page.
   - ✅ Implement the subject-and-message Formspree contact form.
 - 4.4 Admin management interface
