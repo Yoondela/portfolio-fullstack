@@ -16,8 +16,13 @@ export default async function Home() {
           Engineering with a considered point of view.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
-          A collection of practical products, systems, and experiments shaped
-          from the inside out.
+          <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
+            I'm a Web Developer from Cape Town with a foundation in full-stack web development and hands-on experience working with modern web technologies.
+          </p>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
+            This is a collection of practical products, systems, and experiments shaped
+            from the inside out.
+          </p>
         </p>
       </header>
 
@@ -39,7 +44,7 @@ export default async function Home() {
             No projects published yet.
           </p>
         ) : (
-          <ul className="mt-8 grid gap-6 lg:grid-cols-2">
+          <ul className="mt-8 grid gap-6 lg:grid-cols-1">
             {projects.map((project, projectIndex) => {
             const websiteUrl = getSafePublicUrl(project.websiteUrl);
             const githubUrl = getSafePublicUrl(project.githubUrl);

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AccountMenu } from "./account-menu";
+import { SiteNavigationLink } from "./site-navigation-link";
 
 /** Primary navigation shared across public and protected application pages. */
 export function SiteNavigation({ isSignedIn }: { isSignedIn: boolean }) {
@@ -18,37 +19,25 @@ export function SiteNavigation({ isSignedIn }: { isSignedIn: boolean }) {
         >
           <ul className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-stone-700 dark:text-stone-300 sm:gap-x-6">
             <li>
-              <Link
-                href="/"
-                className="underline-offset-4 hover:text-stone-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800 dark:hover:text-stone-50"
-              >
+              <SiteNavigationLink href="/">
                 Work
-              </Link>
+              </SiteNavigationLink>
             </li>
             <li>
-              <Link
-                href="/engineering"
-                className="underline-offset-4 hover:text-stone-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800 dark:hover:text-stone-50"
-              >
+              <SiteNavigationLink href="/engineering">
                 Engineering
-              </Link>
+              </SiteNavigationLink>
             </li>
             <li>
-              <Link
-                href="/contact"
-                className="underline-offset-4 hover:text-stone-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800 dark:hover:text-stone-50"
-              >
+              <SiteNavigationLink href="/contact">
                 Contact
-              </Link>
+              </SiteNavigationLink>
             </li>
             {isSignedIn && (
               <li>
-                <Link
-                  href="/manage/projects"
-                  className="underline-offset-4 hover:text-stone-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800 dark:hover:text-stone-50"
-                >
+                <SiteNavigationLink href="/manage/projects">
                   Manage projects
-                </Link>
+                </SiteNavigationLink>
               </li>
             )}
           </ul>
