@@ -1,21 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { mockExists, mockFrom } = vi.hoisted(() => ({
+const { mockCreateClient, mockExists, mockFrom } = vi.hoisted(() => ({
+  mockCreateClient: vi.fn(),
   mockExists: vi.fn(),
   mockFrom: vi.fn(() => ({ exists: mockExists })),
 }));
 
 vi.mock("@supabase/supabase-js", () => ({
-  createClient: vi.fn(() => ({
+  createClient: mockCreateClient.mockImplementation(() => ({
     storage: { from: mockFrom },
   })),
 }));
 
 import { ScreenshotStorageVerificationError } from "../screenshot-storage-errors";
-import {
-  assertScreenshotStorageObject,
-  SCREENSHOT_STORAGE_BUCKET,
-} from "../supabase-storage";
+import { assertScreenshotStorageObject } from "../supabase-storage";
 
 const storagePath =
   "projects/project-id/features/feature-id/screenshot.webp";
@@ -26,12 +24,23 @@ describe("assertScreenshotStorageObject", () => {
     mockFrom.mockReturnValue({ exists: mockExists });
   });
 
+  it("initializes Supabase only when a storage operation runs", async () => {
+    expect(mockCreateClient).not.toHaveBeenCalled();
+
+    mockExists.mockResolvedValue({ data: true, error: null });
+    await assertScreenshotStorageObject(storagePath);
+
+    expect(mockCreateClient).toHaveBeenCalledOnce();
+  });
+
   it("checks the exact object path", async () => {
     mockExists.mockResolvedValue({ data: true, error: null });
 
     await expect(assertScreenshotStorageObject(storagePath)).resolves.toBeUndefined();
 
-    expect(mockFrom).toHaveBeenCalledWith(SCREENSHOT_STORAGE_BUCKET);
+    expect(mockFrom).toHaveBeenCalledWith(
+      process.env.SUPABASE_STORAGE_BUCKET
+    );
     expect(mockExists).toHaveBeenCalledWith(storagePath);
   });
 

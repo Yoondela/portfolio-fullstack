@@ -1,9 +1,12 @@
 import { getPublishedProjects } from "@/lib/projects";
 import { getSafePublicUrl } from "@/lib/public-url";
 import { getPublicScreenshotUrl } from "@/lib/supabase-storage";
+import { connection } from "next/server";
 
 /** Renders the published portfolio projects in their configured display order. */
 export default async function Home() {
+  await connection();
+
   const projects = await getPublishedProjects();
 
   return (

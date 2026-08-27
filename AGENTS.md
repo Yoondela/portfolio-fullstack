@@ -46,6 +46,11 @@ Line count: -34.
 - Do not export objects, constants, synchronous functions, or other runtime values from `"use server"` modules.
 - Move shared constants/helpers to separate modules when they need to be exported.
 
+### Runtime environment configuration
+
+- Do not read or validate runtime-only environment variables at module evaluation time. Lazily initialize and validate server integrations only when an operation uses them, so production builds do not require runtime secrets.
+- Keep `.env` files and secrets out of Docker build contexts and images. Provide runtime configuration through the deployment environment.
+
 ### Git Discipline
 
 - Avoid working on main branch.

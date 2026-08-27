@@ -9,16 +9,6 @@ export {
   SCREENSHOT_UPLOAD_MAX_SIZE_BYTES,
 } from "./screenshot-storage-config";
 
-/** Bucket used exclusively for publicly served portfolio screenshots. */
-export const SCREENSHOT_STORAGE_BUCKET = requiredEnvironmentVariable(
-  "SUPABASE_STORAGE_BUCKET"
-);
-
-const supabaseUrl = getSupabaseProjectUrl(
-  requiredEnvironmentVariable("SUPABASE_URL")
-);
-const supabaseSecretKey = requiredEnvironmentVariable("SUPABASE_SECRET_KEY");
-
 if (!globalThis.WebSocket) {
   Object.defineProperty(globalThis, "WebSocket", {
     configurable: true,
@@ -27,21 +17,39 @@ if (!globalThis.WebSocket) {
   });
 }
 
-/**
- * Server-only Supabase client for privileged screenshot Storage operations.
- * The secret key must never be imported into client-side code.
- */
-export const supabaseStorage = createClient(supabaseUrl, supabaseSecretKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
+/** Creates the configured client only when a Storage operation is requested. */
+function createSupabaseStorage() {
+  const bucketName = requiredEnvironmentVariable("SUPABASE_STORAGE_BUCKET");
+  const supabaseUrl = getSupabaseProjectUrl(
+    requiredEnvironmentVariable("SUPABASE_URL")
+  );
+  const supabaseSecretKey = requiredEnvironmentVariable("SUPABASE_SECRET_KEY");
+  const supabaseStorage = createClient(supabaseUrl, supabaseSecretKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+
+  return { bucketName, supabaseStorage };
+}
+
+let storageConfiguration: ReturnType<typeof createSupabaseStorage> | undefined;
+
+function getSupabaseStorage() {
+  if (!storageConfiguration) {
+    storageConfiguration = createSupabaseStorage();
+  }
+
+  return storageConfiguration;
+}
 
 /** Returns the public URL for a screenshot object stored in the configured bucket. */
 export function getPublicScreenshotUrl(storagePath: string): string {
+  const { bucketName, supabaseStorage } = getSupabaseStorage();
+
   return supabaseStorage.storage
-    .from(SCREENSHOT_STORAGE_BUCKET)
+    .from(bucketName)
     .getPublicUrl(storagePath).data.publicUrl;
 }
 
@@ -49,8 +57,10 @@ export function getPublicScreenshotUrl(storagePath: string): string {
 export async function createSignedScreenshotUploadUrl(
   storagePath: string
 ): Promise<{ signedUrl: string; token: string }> {
+  const { bucketName, supabaseStorage } = getSupabaseStorage();
+
   const { data, error } = await supabaseStorage.storage
-    .from(SCREENSHOT_STORAGE_BUCKET)
+    .from(bucketName)
     .createSignedUploadUrl(storagePath);
 
   if (error || !data) {
@@ -64,8 +74,10 @@ export async function createSignedScreenshotUploadUrl(
 export async function assertScreenshotStorageObject(
   storagePath: string
 ): Promise<void> {
+  const { bucketName, supabaseStorage } = getSupabaseStorage();
+
   const { data: exists, error } = await supabaseStorage.storage
-    .from(SCREENSHOT_STORAGE_BUCKET)
+    .from(bucketName)
     .exists(storagePath);
 
   if (error || !exists) {
@@ -82,8 +94,10 @@ export async function deleteScreenshotStorageObjects(
   const uniqueStoragePaths = [...new Set(storagePaths)];
   if (uniqueStoragePaths.length === 0) return;
 
+  const { bucketName, supabaseStorage } = getSupabaseStorage();
+
   const { error } = await supabaseStorage.storage
-    .from(SCREENSHOT_STORAGE_BUCKET)
+    .from(bucketName)
     .remove(uniqueStoragePaths);
 
   if (error) {
