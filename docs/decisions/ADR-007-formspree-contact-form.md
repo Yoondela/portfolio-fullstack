@@ -15,8 +15,8 @@ deployed Next.js application, and avoid introducing a server-side email API key.
 
 Use Formspree's hosted form endpoint for contact-form delivery.
 
-- The browser will submit the form directly to the project Formspree endpoint:
-  `https://formspree.io/f/maewrqrw`.
+- The browser will submit the form directly to the Formspree endpoint configured
+  through `NEXT_PUBLIC_FORMSPREE_ENDPOINT`.
 - The endpoint is public by design. It is not a secret and must be defined in
   one place in the application rather than copied across components.
 - Formspree will relay submissions to `yondela08@outlook.com`; its recipient

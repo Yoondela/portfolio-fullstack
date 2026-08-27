@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-const formspreeEndpoint = "https://formspree.io/f/maewrqrw";
+const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
 type SubmissionStatus = "idle" | "submitting" | "succeeded" | "failed";
 
@@ -22,6 +22,8 @@ export function ContactForm() {
     setStatus("submitting");
 
     try {
+      if (!formspreeEndpoint) throw new Error("Formspree is not configured");
+
       const response = await fetch(formspreeEndpoint, {
         method: "POST",
         body: new FormData(form),
