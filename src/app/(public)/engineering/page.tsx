@@ -29,9 +29,9 @@ const technologyGroups: { title: string; items: Technology[] }[] = [
     title: "Languages",
     items: [
       { name: "JavaScript", level: "Strong" },
-      { name: "TypeScript", level: "Strong" },
+      { name: "TypeScript", level: "Working" },
       { name: "Python", level: "Working" },
-      { name: "SQL", level: "Proficient" },
+      { name: "SQL", level: "Working" },
       { name: "Java", level: "Familiar" },
       { name: "C#", level: "Familiar" },
     ],
@@ -40,41 +40,42 @@ const technologyGroups: { title: string; items: Technology[] }[] = [
     title: "Frontend",
     items: [
       { name: "React", level: "Strong" },
-      { name: "Next.js", level: "Strong" },
+      { name: "Next.js", level: "Working" },
       { name: "HTML", level: "Strong" },
       { name: "CSS", level: "Strong" },
       { name: "SCSS / Sass", level: "Working" },
-      { name: "Tailwind CSS", level: "Proficient" },
-      { name: "Vite", level: "Proficient" },
+      { name: "Tailwind CSS", level: "Working" },
+      { name: "Vite", level: "Strong" },
     ],
   },
   {
     title: "Backend / APIs",
     items: [
-      { name: "Node.js", level: "Strong" },
+      { name: "Node.js", level: "Proficient" },
       { name: "Express", level: "Proficient" },
       { name: "Fastify", level: "Working" },
       { name: "FastAPI", level: "Working" },
-      { name: "REST APIs", level: "Strong" },
+      { name: "REST APIs", level: "Proficient" },
       { name: "Socket.IO", level: "Working" },
       { name: "WebSockets", level: "Working" },
-      { name: "JSON", level: "Strong" },
-      { name: "API integration", level: "Strong" },
+      { name: "JSON", level: "Proficient" },
+      { name: "API integration", level: "Proficient" },
     ],
   },
   {
     title: "Data",
     items: [
-      { name: "PostgreSQL", level: "Strong" },
-      { name: "MongoDB", level: "Working" },
-      { name: "Prisma", level: "Strong" },
-      { name: "Mongoose", level: "Working" },
+      { name: "MongoDB", level: "Strong" },
+      { name: "PostgreSQL", level: "Working" },
+      { name: "Mongoose", level: "Strong" },
+      { name: "Prisma", level: "Working" },
+      { name: "Supabase", level: "Working" },
     ],
   },
   {
     title: "Testing",
     items: [
-      { name: "Vitest", level: "Proficient" },
+      { name: "Vitest", level: "Working" },
       { name: "Jest", level: "Working" },
       { name: "Supertest", level: "Working" },
       { name: "Unit testing", level: "Proficient" },
@@ -93,16 +94,6 @@ const technologyGroups: { title: string; items: Technology[] }[] = [
       { name: "Linux / Unix environments", level: "Working" },
       { name: "CI/CD", level: "Working" },
       { name: "Vercel", level: "Proficient" },
-      { name: "Fly.io", level: "Familiar" },
-      { name: "Supabase", level: "Working" },
-    ],
-  },
-  {
-    title: "Authentication / integrations",
-    items: [
-      { name: "Auth.js", level: "Proficient" },
-      { name: "Auth0", level: "Working" },
-      { name: "Google Maps APIs", level: "Working" },
     ],
   },
   {
@@ -121,38 +112,19 @@ const conceptGroups = [
   {
     title: "Application architecture",
     items: [
-      "Client/server boundaries",
       "Layered application architecture",
       "Separation of concerns",
       "Architectural decision records (ADRs)",
       "Requirements-driven development",
-      "Server/client component boundaries",
     ],
   },
   {
     title: "Backend / application design",
     items: [
       "REST API design",
-      "Server Actions",
-      "Route Handlers",
       "Input validation",
-      "Authentication vs authorization",
-      "Server-side authorization",
       "Protected mutations",
       "Real-time communication",
-    ],
-  },
-  {
-    title: "Data",
-    items: [
-      "Relational data modelling",
-      "Document data modelling",
-      "Database migrations",
-      "ORM usage",
-      "Data-access boundaries",
-      "One-to-many relationships",
-      "Cascade deletion",
-      "UUID identifiers",
     ],
   },
   {
@@ -160,48 +132,26 @@ const conceptGroups = [
     items: [
       "Unit testing",
       "Integration testing",
-      "Regression testing",
-      "Mocking external boundaries",
-      "Real-database integration testing",
-      "Static type checking",
       "Linting",
-      "Code review",
       "Debugging and troubleshooting",
       "Maintainable code",
-    ],
-  },
-  {
-    title: "Security",
-    items: [
-      "Password hashing",
-      "Argon2id",
-      "JWT sessions",
-      "Credential validation",
-      "Server-side authorization",
-      "Secret and environment-variable management",
-      "Safe handling of untrusted input",
-      "Safe public URL rendering",
     ],
   },
   {
     title: "Delivery / workflow",
     items: [
       "Git feature branches",
-      "Git worktrees",
       "CI/CD",
       "Containerization",
       "Environment configuration",
       "Cloud deployment",
-      "Small vertical implementation slices",
-      "Implementation → review → fix → test → commit workflow",
     ],
   },
 ];
 
 const workflowSteps = [
-  "Requirements",
-  "Architecture / decisions",
-  "Small implementation slice",
+  "Plan",
+  "Implement small slice",
   "Test",
   "Review",
   "Refine",
@@ -210,7 +160,7 @@ const workflowSteps = [
 
 const currentlyExploring = [
   "Object storage and signed uploads",
-  "Deeper Next.js application architecture",
+  "Security",
   "Production deployment",
   "AI-agent engineering workflows",
 ];
@@ -227,10 +177,8 @@ export default function EngineeringPage() {
           Building software with intention and room to learn.
         </h1>
         <p className="mt-5 text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
-          A practical record of the tools, concepts, and habits I bring to
-          software work. Self-assessed proficiency is approximate and
-          context-dependent; the useful measure is applying the right tool with
-          care.
+          This is a record of the some of the tools, concepts, and habits I use in development.
+            The proficiency indicated is self assessed and approximate.
         </p>
       </header>
 

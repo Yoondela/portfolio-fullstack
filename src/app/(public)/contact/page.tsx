@@ -9,10 +9,10 @@ export default function ContactPage() {
           Contact
         </p>
         <h1 className="mt-4 font-serif text-4xl leading-tight text-stone-900 sm:text-5xl dark:text-stone-100">
-          Let&apos;s make something considered.
+          Let&apos;s connect.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
-          For project conversations, collaborations, or a thoughtful exchange
+          For project conversations, employment,  collaborations, or a thoughtful exchange
           about engineering, email is the best place to start.
         </p>
       </header>
