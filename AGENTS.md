@@ -76,6 +76,7 @@ Structure **Optional** with Issue: and Why optional:
 ## UI / Styling
 
 - Use Tailwind CSS for styling.
+- Use valid HTML semantics in JSX; never nest `<p>` elements inside another `<p>` because browsers rewrite the markup and cause hydration failures.
 - Keep the interface minimal and functional.
 - Visual direction: understated 1980s retro lifestyle aesthetic — think late-night malls, restaurants, lounges, hotel interiors, record-store photography, and soft analog editorial design.
 - Aim for a dreamy, warm, slightly nostalgic atmosphere rather than a techy, cyberpunk, arcade, or synthwave look.
