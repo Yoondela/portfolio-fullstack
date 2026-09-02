@@ -6,6 +6,9 @@ import { authorizeCredentials } from "@/lib/auth/credentials";
 
 // Auth.js owns the JWT session; credentials and authorization stay server-side.
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  pages: {
+    signIn: "/signin",
+  },
   session: {
     strategy: "jwt",
     maxAge: 48 * 60 * 60,

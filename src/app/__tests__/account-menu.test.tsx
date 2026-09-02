@@ -42,7 +42,7 @@ describe("AccountMenu", () => {
     const menu = screen.getByRole("menu");
     const signIn = screen.getByRole("menuitem", { name: "Sign in" });
     expect(menu.getAttribute("aria-labelledby")).toBe(avatarButton().id);
-    expect(signIn.getAttribute("href")).toBe("/api/auth/signin");
+    expect(signIn.getAttribute("href")).toBe("/signin");
     expect(signIn.getAttribute("tabindex")).toBe("-1");
     expect(avatarButton().getAttribute("aria-expanded")).toBe("true");
 

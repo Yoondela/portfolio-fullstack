@@ -171,7 +171,7 @@ export function AccountMenu({ isSignedIn }: { isSignedIn: boolean }) {
           ) : (
             <li role="none">
               <Link
-                href="/api/auth/signin"
+                href="/signin"
                 role="menuitem"
                 tabIndex={-1}
                 onClick={() => closeMenu(true)}

@@ -19,13 +19,12 @@ export default async function Home() {
           Engineering with a considered point of view.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
-          <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
-            I'm a Web Developer from Cape Town with a foundation in full-stack web development and hands-on experience working with modern web technologies.
-          </p>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
-            This is a collection of practical products, systems, and experiments shaped
-            from the inside out.
-          </p>
+          I&apos;m a Web Developer from Cape Town with a foundation in full-stack web
+          development and hands-on experience working with modern web technologies.
+        </p>
+        <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg dark:text-stone-300">
+          This is a collection of practical products, systems, and experiments shaped
+          from the inside out.
         </p>
       </header>
 
