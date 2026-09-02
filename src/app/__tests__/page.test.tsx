@@ -14,6 +14,7 @@ vi.mock("@/lib/projects", () => ({
 vi.mock("@/lib/supabase-storage", () => ({
   getPublicScreenshotUrl: mockGetPublicScreenshotUrl,
 }));
+vi.mock("next/server", () => ({ connection: vi.fn() }));
 
 import Home from "../(public)/page";
 
@@ -28,6 +29,7 @@ describe("Home", () => {
         id: "11111111-1111-4111-8111-111111111111",
         name: "Published project",
         description: "A public project.",
+        note: "A public project note.",
         technologies: ["TypeScript"],
         websiteUrl: "https://example.com",
         githubUrl: "https://github.com/example/project",
@@ -81,6 +83,9 @@ describe("Home", () => {
     );
     expect(markup).toContain("Published project");
     expect(markup).toContain("Engineering with a considered point of view.");
+    expect(markup).toContain("Note");
+    expect(markup).toContain("A public project note.");
+    expect(markup).toContain("End");
     expect(markup).toContain("Project 01");
     expect(markup).toContain("Stack");
     expect(markup).toContain("A public project.");
@@ -94,6 +99,9 @@ describe("Home", () => {
     expect(markup).toContain('aria-label="First feature screenshots"');
     expect(markup.indexOf("First feature")).toBeLessThan(
       markup.indexOf("Second feature")
+    );
+    expect(markup.indexOf("Second feature")).toBeLessThan(
+      markup.indexOf("A public project note.")
     );
     expect(markup).toContain('href="https://example.com"');
     expect(markup).toContain('href="https://github.com/example/project"');
@@ -114,6 +122,7 @@ describe("Home", () => {
         id: "11111111-1111-4111-8111-111111111111",
         name: "Legacy project",
         description: "Contains URLs saved before protocol validation.",
+        note: null,
         technologies: [],
         websiteUrl: "javascript:alert(1)",
         githubUrl: "javascript:alert(2)",
@@ -128,5 +137,6 @@ describe("Home", () => {
 
     expect(markup).not.toContain("javascript:");
     expect(markup).not.toContain("href=");
+    expect(markup).not.toContain(">Note</h4>");
   });
 });

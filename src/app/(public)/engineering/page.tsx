@@ -298,9 +298,8 @@ export default function EngineeringPage() {
           ))}
         </ol>
         <p className="mt-6 max-w-3xl leading-7 text-stone-700 dark:text-stone-300">
-          AI-assisted development is part of this workflow: it can help explore
-          options, debug, and review. Engineering judgement, architecture,
-          testing, and review remain explicit responsibilities.
+          AI-assisted development is part of this workflow. I use it for help to explore
+          options, debug, and review.
         </p>
       </section>
 

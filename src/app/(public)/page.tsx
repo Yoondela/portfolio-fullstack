@@ -108,7 +108,7 @@ export default async function Home() {
                             {feature.screenshots.length > 0 && (
                               <ul
                                 aria-label={`${feature.name} screenshots`}
-                                className="mt-4 grid gap-3 sm:grid-cols-2"
+                                className="mt-4 grid gap-3"
                               >
                                 {feature.screenshots.map((screenshot) => {
                                   const url = screenshot.storagePath
@@ -143,6 +143,17 @@ export default async function Home() {
                     </section>
                   )}
 
+                  {project.note && (
+                    <section className="mt-8 border-t border-stone-200 pt-6 dark:border-stone-800">
+                      <h4 className="text-xs font-medium uppercase tracking-[0.18em] text-stone-500 dark:text-stone-400">
+                        Note
+                      </h4>
+                      <p className="mt-3 whitespace-pre-line text-sm leading-6 text-stone-700 dark:text-stone-300">
+                        {project.note}
+                      </p>
+                    </section>
+                  )}
+
                   {(websiteUrl || githubUrl) && (
                     <footer className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t border-stone-200 pt-5 text-sm dark:border-stone-800">
                       {websiteUrl && (
@@ -170,6 +181,10 @@ export default async function Home() {
           </ul>
         )}
       </section>
+
+      <p className="text-center text-xl font-medium uppercase tracking-[0.24em] text-stone-500 dark:text-stone-400">
+        End
+      </p>
     </div>
   );
 }

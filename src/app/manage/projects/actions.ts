@@ -41,6 +41,7 @@ function projectInputFromFormData(formData: FormData) {
   return {
     name: formData.get("name"),
     description: formData.get("description"),
+    note: formData.get("note") ?? "",
     technologies: formData.getAll("technologies").filter((value) => value !== ""),
     websiteUrl: formData.get("websiteUrl") ?? "",
     githubUrl: formData.get("githubUrl") ?? "",
@@ -59,6 +60,7 @@ function updateProjectInputFromFormData(formData: FormData) {
   if (formData.has("description")) {
     input.description = formData.get("description");
   }
+  if (formData.has("note")) input.note = formData.get("note");
   if (formData.has("technologies")) {
     input.technologies = formData
       .getAll("technologies")

@@ -21,6 +21,7 @@ const webUrlSchema = z
 export const createProjectInputSchema = z.object({
   name: z.string().min(1, "Project name is required").max(255),
   description: z.string().min(1, "Description is required"),
+  note: z.string().trim().max(400, "Note must be 400 characters or fewer").optional(),
   technologies: z.array(z.string()).default([]),
   websiteUrl: webUrlSchema,
   githubUrl: webUrlSchema,
@@ -36,6 +37,7 @@ export const updateProjectInputSchema = z
   .object({
     name: z.string().min(1, "Project name is required").max(255),
     description: z.string().min(1, "Description is required"),
+    note: z.string().trim().max(400, "Note must be 400 characters or fewer"),
     technologies: z.array(z.string()),
     websiteUrl: webUrlSchema,
     githubUrl: webUrlSchema,

@@ -37,6 +37,7 @@ describe("Project CRUD Operations", () => {
     const project = await createProject({
       name: "Test Project",
       description: "Test description",
+      note: "A short public note.",
       technologies: ["TypeScript"],
       displayOrder: 1,
     });
@@ -45,6 +46,7 @@ describe("Project CRUD Operations", () => {
 
     expect(project.name).toBe("Test Project");
     expect(project.description).toBe("Test description");
+    expect(project.note).toBe("A short public note.");
     expect(project.technologies).toEqual(["TypeScript"]);
     expect(project.displayOrder).toBe(1);
     expect(project.published).toBe(false);
@@ -122,7 +124,7 @@ describe("Project CRUD Operations", () => {
     expect(retrieved).toBeNull();
   });
 
-  it("should update project fields", async () => {
+  it("should update and clear optional project note", async () => {
     const created = await createProject({
       name: "Original Name",
       description: "Original",
@@ -133,14 +135,19 @@ describe("Project CRUD Operations", () => {
     const updated = await updateProject(created.id, {
       name: "Updated Name",
       description: "Updated description",
+      note: "An updated public note.",
       technologies: ["React", "Next.js"],
     });
 
     expect(updated.name).toBe("Updated Name");
     expect(updated.description).toBe("Updated description");
+    expect(updated.note).toBe("An updated public note.");
     expect(updated.technologies).toEqual(["React", "Next.js"]);
     expect(updated.displayOrder).toBe(3); // Unchanged
     expect(updated.published).toBe(false); // Unchanged
+
+    const cleared = await updateProject(created.id, { note: "" });
+    expect(cleared.note).toBeNull();
   });
 
   it("should publish a project", async () => {

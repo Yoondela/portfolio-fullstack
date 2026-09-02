@@ -11,6 +11,7 @@ type EditableProject = Pick<
   | "id"
   | "name"
   | "description"
+  | "note"
   | "technologies"
   | "websiteUrl"
   | "githubUrl"
@@ -147,6 +148,20 @@ export function EditProjectForm({ project }: { project: EditableProject }) {
       </div>
 
       <FeatureFields initialFeatures={project.features} />
+
+      <div>
+        <label htmlFor="note" className="block text-sm font-medium">
+          Note (optional)
+        </label>
+        <textarea
+          id="note"
+          name="note"
+          rows={2}
+          maxLength={400}
+          defaultValue={project.note ?? ""}
+          className="mt-1 w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700"
+        />
+      </div>
 
       {state.success ? (
         <p role="status" className="text-sm text-green-700 dark:text-green-400">
