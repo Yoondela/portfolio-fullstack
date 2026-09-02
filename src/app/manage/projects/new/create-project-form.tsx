@@ -91,6 +91,19 @@ export function CreateProjectForm() {
 
       <FeatureFields />
 
+      <div>
+        <label htmlFor="note" className="block text-sm font-medium">
+          Note (optional)
+        </label>
+        <textarea
+          id="note"
+          name="note"
+          rows={2}
+          maxLength={400}
+          className="mt-1 w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700"
+        />
+      </div>
+
       {state.success ? (
         <p role="status" className="text-sm text-green-700 dark:text-green-400">
           Project created.

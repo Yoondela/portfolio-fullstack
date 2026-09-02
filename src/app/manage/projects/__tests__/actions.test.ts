@@ -70,6 +70,7 @@ function validProjectFormData() {
   const formData = new FormData();
   formData.set("name", "Test project");
   formData.set("description", "A test project.");
+  formData.set("note", "A concise project note.");
   formData.append("technologies", "TypeScript");
   formData.append("technologies", "Next.js");
   formData.set("displayOrder", "1");
@@ -125,6 +126,7 @@ describe("project Server Actions", () => {
     expect(mockCreateProject).toHaveBeenCalledWith({
       name: "Test project",
       description: "A test project.",
+      note: "A concise project note.",
       technologies: ["TypeScript", "Next.js"],
       websiteUrl: "",
       githubUrl: "",
@@ -151,6 +153,7 @@ describe("project Server Actions", () => {
       {
         name: "Test project",
         description: "A test project.",
+        note: "A concise project note.",
         technologies: ["TypeScript", "Next.js"],
         websiteUrl: "",
         githubUrl: "",
@@ -196,6 +199,7 @@ describe("project Server Actions", () => {
     expect(mockUpdateProject).toHaveBeenCalledWith(projectId, {
       name: "Test project",
       description: "A test project.",
+      note: "A concise project note.",
       technologies: ["TypeScript", "Next.js"],
       displayOrder: 1,
     });
@@ -223,6 +227,7 @@ describe("project Server Actions", () => {
       {
         name: "Test project",
         description: "A test project.",
+        note: "A concise project note.",
         technologies: ["TypeScript", "Next.js"],
         displayOrder: 1,
       },

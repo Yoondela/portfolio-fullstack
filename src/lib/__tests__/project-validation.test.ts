@@ -13,6 +13,24 @@ const validProjectInput = {
 };
 
 describe("project URL validation", () => {
+  it("accepts a 400-character note and rejects a longer note", () => {
+    expect(
+      createProjectInputSchema.safeParse({
+        ...validProjectInput,
+        note: "a".repeat(400),
+      }).success
+    ).toBe(true);
+    expect(
+      createProjectInputSchema.safeParse({
+        ...validProjectInput,
+        note: "a".repeat(401),
+      }).success
+    ).toBe(false);
+    expect(
+      updateProjectInputSchema.safeParse({ note: "a".repeat(401) }).success
+    ).toBe(false);
+  });
+
   it.each(["websiteUrl", "githubUrl"] as const)(
     "rejects javascript URLs for %s when creating a project",
     (field) => {

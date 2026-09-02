@@ -74,6 +74,7 @@ export async function createProject(
     data: {
       name: validated.name,
       description: validated.description,
+      note: validated.note || null,
       technologies: validated.technologies,
       websiteUrl: validated.websiteUrl || null,
       githubUrl: validated.githubUrl || null,
@@ -95,6 +96,7 @@ export async function createProjectWithFeatures(
     data: {
       name: validated.name,
       description: validated.description,
+      note: validated.note || null,
       technologies: validated.technologies,
       websiteUrl: validated.websiteUrl || null,
       githubUrl: validated.githubUrl || null,
@@ -120,6 +122,7 @@ export async function updateProject(
       ...(validated.description !== undefined && {
         description: validated.description,
       }),
+      ...(validated.note !== undefined && { note: validated.note || null }),
       ...(validated.technologies !== undefined && {
         technologies: validated.technologies,
       }),
@@ -155,6 +158,7 @@ export async function updateProjectWithFeatures(
       ...(validated.description !== undefined && {
         description: validated.description,
       }),
+      ...(validated.note !== undefined && { note: validated.note || null }),
       ...(validated.technologies !== undefined && {
         technologies: validated.technologies,
       }),

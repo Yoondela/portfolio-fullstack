@@ -78,7 +78,7 @@ Project
 
 ### Project
 
-Represents a portfolio project.
+Represents a portfolio project, including an optional public plain-text note.
 
 ### Feature
 
