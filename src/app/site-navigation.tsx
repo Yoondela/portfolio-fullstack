@@ -55,6 +55,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-stone-300/80 px-5 py-6 text-sm text-stone-600 dark:border-stone-700 dark:text-stone-400 sm:px-8">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4">
+        <p>Alend Tech™</p>
         <p>Selected engineering work.</p>
         <p>© 2026</p>
       </div>
