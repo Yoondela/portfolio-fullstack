@@ -35,6 +35,9 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: "Send message" }));
 
     expect(mockFetch).toHaveBeenCalledOnce();
+    expect(mockFetch.mock.calls[0]?.[0]).toBe(
+      "https://formspree.io/f/maewrqrw"
+    );
     const request = mockFetch.mock.calls[0]?.[1];
     expect(request?.body).toBeInstanceOf(FormData);
     expect(request?.body.get("email")).toBe("visitor@example.com");
